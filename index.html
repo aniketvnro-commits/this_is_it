@@ -1458,8 +1458,8 @@ body { transition: background 0.25s ease, color 0.25s ease; }
       </div>
       <div class="grid cols-2" style="margin-top:16px;">
         <div class="card anim-fadeUp d5">
-          <h3>Non-Negotiable</h3>
-          <p id="dashNonNegotiable" style="color:var(--muted);font-size:14px;line-height:1.65;">Not set yet. Add it in Morning Prime.</p>
+          <h3>Today’s Idea</h3>
+          <p id="dashNonNegotiable" style="color:var(--muted);font-size:14px;line-height:1.65;">Not set yet. Add today’s idea in Morning Prime.</p>
         </div>
         <div class="card anim-fadeUp d6">
           <h3>Weak Area Alert</h3>
@@ -1472,90 +1472,37 @@ body { transition: background 0.25s ease, color 0.25s ease; }
     <section id="morning" class="section">
       <div class="hero-banner">
         <h2>Morning Prime</h2>
-        <p>Save reusable affirmation techniques, pre-written affirmation page links, and music links. Then select one method every morning and mark the start protocol complete.</p>
+        <p>Keep this simple: write one clear thought for today. It saves against today’s date and connects with Daily Protocol automatically.</p>
       </div>
 
       <div class="grid cols-2">
         <div class="card anim-fadeUp d1">
-          <h3>Today’s Start Protocol</h3>
+          <h3>Today’s Idea</h3>
           <form id="morningForm" class="form-grid">
             <div class="field-wrap full">
-              <label>Selected Method / Technique</label>
-              <select name="selectedMethod" id="selectedMethod">
-                <option value="">Choose a saved method</option>
-              </select>
-            </div>
-            <div class="field-wrap full">
-              <label>Identity Line</label>
-              <input name="identityLine" placeholder="I operate with calm discipline and sharp execution." />
-            </div>
-            <div class="field-wrap">
-              <label>Mood Before (1-10)</label>
-              <input name="moodBefore" type="number" min="1" max="10" placeholder="7" />
-            </div>
-            <div class="field-wrap">
-              <label>Duration Completed</label>
-              <input name="durationCompleted" placeholder="10 minutes" />
-            </div>
-            <div class="field-wrap">
-              <label>Today's Intention</label>
-              <textarea name="intention" placeholder="Today I will operate from calm focus..."></textarea>
-            </div>
-            <div class="field-wrap">
-              <label>Today's Non-Negotiable</label>
-              <textarea name="nonNegotiable" placeholder="Complete 90 min of Python practice."></textarea>
+              <label>Thought / Idea for Today</label>
+              <textarea name="todayIdea" id="todayIdea" placeholder="What is the one thought, direction, or idea I want to carry today?"></textarea>
             </div>
             <div class="actions full">
-              <button class="btn-primary" type="submit" style="width:auto;padding:12px 28px;">Mark Morning Prime Complete</button>
+              <button class="btn-primary" type="submit" style="width:auto;padding:12px 28px;">Save Today’s Idea</button>
               <button class="btn-secondary" type="button" data-clear="morningForm">Clear</button>
             </div>
           </form>
         </div>
 
         <div class="card anim-fadeUp d2">
-          <h3>Add Affirmation Method</h3>
-          <form id="methodForm" class="form-grid">
-            <div class="field-wrap full">
-              <label>Method Name</label>
-              <input name="name" placeholder="Masculine Discipline Morning Method" />
-            </div>
-            <div class="field-wrap">
-              <label>Method Type</label>
-              <select name="type">
-                <option>Affirmation Reading</option>
-                <option>Affirmation Music</option>
-                <option>Breathing + Affirmation</option>
-                <option>Visualization</option>
-                <option>Power Posture + Audio</option>
-                <option>Custom</option>
-              </select>
-            </div>
-            <div class="field-wrap">
-              <label>Suggested Duration</label>
-              <input name="duration" placeholder="5–10 minutes" />
-            </div>
-            <div class="field-wrap full">
-              <label>Pre-written Affirmation Page / Site Link</label>
-              <input name="affirmationLink" placeholder="Paste Google Doc / Notion / webpage link" />
-            </div>
-            <div class="field-wrap full">
-              <label>Music / Audio Link</label>
-              <input name="musicLink" placeholder="Paste Musicfly AI / Drive / YouTube / audio link" />
-            </div>
-            <div class="field-wrap full">
-              <label>Method Instructions</label>
-              <textarea name="instructions" placeholder="Example: Open the affirmation page, play the music, stand straight, breathe deeply, read slowly, visualize the day, then set one non-negotiable task."></textarea>
-            </div>
-            <div class="actions full">
-              <button class="btn-primary" type="submit" style="width:auto;padding:12px 28px;">Save Method</button>
-            </div>
-          </form>
+          <h3>Today’s Status</h3>
+          <p id="morningTodayStatus" style="color:var(--muted);font-size:14px;line-height:1.65;">No idea saved for today yet.</p>
+          <div class="badge-row" style="margin-top:14px;">
+            <span class="badge dark">Saved by date</span>
+            <span class="badge">Auto-links with Daily Protocol</span>
+          </div>
         </div>
       </div>
 
       <div class="card anim-fadeUp d3" style="margin-top:16px;">
-        <h3>Saved Morning Methods</h3>
-        <div id="methodList" class="list"></div>
+        <h3>Recent Morning Ideas</h3>
+        <div id="morningIdeaList" class="list"></div>
       </div>
     </section>
 
@@ -1920,46 +1867,53 @@ function setSection(id) {
 function renderAll() { renderDashboard(); renderMethods(); renderLists(); renderWeekly(); }
 
 function renderMethods() {
-  const select = document.getElementById('selectedMethod');
-  const list = document.getElementById('methodList');
-  if (!select || !list) return;
+  const form = document.getElementById('morningForm');
+  const status = document.getElementById('morningTodayStatus');
+  const list = document.getElementById('morningIdeaList');
+  if (!form || !status || !list) return;
 
-  select.innerHTML = `<option value="">Choose a saved method</option>` + data.morningMethods.map(method => `
-    <option value="${method.id}">${escapeHTML(method.name || 'Morning Method')}</option>
-  `).join('');
+  const today = todayISO();
+  const todayEntry = data.morningPrime.find(x => x.date === today);
 
-  list.innerHTML = data.morningMethods.slice().reverse().map((method, i) => `
+  if (document.activeElement !== form.todayIdea) {
+    form.todayIdea.value = todayEntry?.todayIdea || todayEntry?.intention || todayEntry?.nonNegotiable || '';
+  }
+
+  status.textContent = todayEntry?.todayIdea
+    ? `Saved for today: ${todayEntry.todayIdea}`
+    : 'No idea saved for today yet.';
+
+  list.innerHTML = data.morningPrime.slice().reverse().slice(0, 10).map((entry, i) => `
     <div class="list-item" style="animation-delay:${i * 0.05}s">
       <div>
-        <h4>${escapeHTML(method.name || 'Morning Method')}</h4>
-        <p>${escapeHTML(method.instructions || 'No instructions added')}</p>
+        <h4>${escapeHTML(entry.date || 'Saved Idea')}</h4>
+        <p>${escapeHTML(entry.todayIdea || entry.intention || entry.nonNegotiable || 'No idea text saved')}</p>
         <div class="badge-row">
-          <span class="badge dark">${escapeHTML(method.type || 'Custom')}</span>
-          <span class="badge">${escapeHTML(method.duration || 'Duration not set')}</span>
-          ${method.affirmationLink ? `<a class="badge gold" target="_blank" rel="noopener" href="${escapeHTML(method.affirmationLink)}">Open Affirmation</a>` : ''}
-          ${method.musicLink ? `<a class="badge" target="_blank" rel="noopener" href="${escapeHTML(method.musicLink)}">Open Music</a>` : ''}
+          <span class="badge dark">Morning Prime</span>
+          <span class="badge">Daily thought</span>
         </div>
       </div>
-      <button class="btn-danger" onclick="deleteItem('morningMethods','${method.id}')">Delete</button>
+      <button class="btn-danger" onclick="deleteItem('morningPrime','${entry.id}')">Delete</button>
     </div>
-  `).join('') || `<div class="empty-state"><p>No morning methods saved yet. Add your affirmation site and music links here.</p></div>`;
+  `).join('') || `<div class="empty-state"><p>No morning ideas saved yet. Write today’s idea to begin.</p></div>`;
 }
 
 function renderDashboard() {
   const proto = getTodayEntry('dailyProtocol');
   const morning = getTodayEntry('morningPrime');
+  const morningDone = !!morning || !!proto?.morningPrime;
   const lh = data.learning.filter(x => x.date === todayISO()).reduce((s, x) => s + Number(x.hours || 0), 0);
   const cc = data.careerTasks.filter(x => x.date === todayISO() && x.status === 'Completed').length;
   const score = proto?.score || 0;
 
   document.getElementById('dashScore').textContent = `${score}/100`;
-  document.getElementById('dashMorning').textContent = morning ? 'Done' : 'No';
+  document.getElementById('dashMorning').textContent = morningDone ? 'Done' : 'No';
   document.getElementById('dashLearning').textContent = `${lh}h`;
   document.getElementById('dashCareer').textContent = cc;
-  document.getElementById('dashNonNegotiable').textContent = morning?.nonNegotiable || 'Not set yet. Add it in Morning Prime.';
+  document.getElementById('dashNonNegotiable').textContent = morning?.todayIdea || morning?.intention || morning?.nonNegotiable || 'Not set yet. Add today’s idea in Morning Prime.';
 
   // Progress strip
-  document.getElementById('ps-morning').style.width = morning ? '100%' : '0%';
+  document.getElementById('ps-morning').style.width = morningDone ? '100%' : '0%';
   document.getElementById('ps-protocol').style.width = proto ? '100%' : '0%';
   document.getElementById('ps-learning').style.width = lh > 0 ? Math.min(100, lh * 50) + '%' : '0%';
   document.getElementById('ps-career').style.width = cc > 0 ? Math.min(100, cc * 25) + '%' : '0%';
@@ -2169,11 +2123,13 @@ document.addEventListener('DOMContentLoaded', () => {
   function loadProtocolForDate(date) {
     const today = todayISO();
     const entry = data.dailyProtocol.find(x => x.date === date);
+    const morningEntry = data.morningPrime.find(x => x.date === date);
     const form = document.getElementById('protocolForm');
 
     Object.keys(weights).forEach(k => {
       if (form[k]) form[k].checked = !!(entry && entry[k]);
     });
+    if (form.morningPrime && morningEntry) form.morningPrime.checked = true;
     updateScorePreview();
 
     if (entry) {
@@ -2220,6 +2176,7 @@ document.addEventListener('DOMContentLoaded', () => {
     e.preventDefault();
     const date = protocolDateInput.value || todayISO();
     const vals = checkboxValues(e.target);
+    if (data.morningPrime.find(x => x.date === date)) vals.morningPrime = true;
     const score = calculateScore(vals);
     const existing = data.dailyProtocol.find(x => x.date === date);
     upsertByDate('dailyProtocol', {
@@ -2241,23 +2198,23 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('morningForm').addEventListener('submit', e => {
     e.preventDefault();
     const obj = formToObject(e.target);
-    const selected = data.morningMethods.find(method => method.id === obj.selectedMethod);
-    upsertByDate('morningPrime', {
-      ...obj,
-      methodName: selected?.name || '',
-      methodType: selected?.type || '',
-      id: getTodayEntry('morningPrime')?.id || uid(),
-      date: todayISO(),
-      completed: true
-    });
-    saveData(); setSection('dashboard');
-  });
+    const date = todayISO();
+    const existingMorning = data.morningPrime.find(x => x.date === date);
 
-  document.getElementById('methodForm').addEventListener('submit', e => {
-    e.preventDefault();
-    const obj = formToObject(e.target);
-    data.morningMethods.push({ ...obj, id: uid(), createdAt: todayISO() });
-    e.target.reset();
+    upsertByDate('morningPrime', {
+      id: existingMorning?.id || uid(),
+      date,
+      todayIdea: (obj.todayIdea || '').trim(),
+      completed: true,
+      savedAt: new Date().toISOString()
+    });
+
+    const existingProtocol = data.dailyProtocol.find(x => x.date === date);
+    if (existingProtocol) {
+      existingProtocol.morningPrime = true;
+      existingProtocol.score = calculateScore(existingProtocol);
+    }
+
     saveData();
   });
 
