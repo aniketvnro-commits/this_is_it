@@ -677,6 +677,395 @@ audio { width: 100%; margin-top: 10px; }
   .date-pill { width: 100%; justify-content: center; }
   .sidebar { left: 10px; right: 10px; top: 10px; max-height: calc(100vh - 20px); }
 }
+
+/* ─── TIMING HINT ───────────────────────────── */
+.timing-hint {
+  display: flex; align-items: flex-start; gap: 14px;
+  background: linear-gradient(135deg, rgba(14,155,136,0.08) 0%, rgba(245,200,66,0.10) 100%);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--teal);
+  border-radius: var(--r-md);
+  padding: 14px 18px;
+  margin-bottom: 20px;
+  backdrop-filter: blur(8px);
+}
+.timing-hint .hint-icon {
+  font-size: 22px; line-height: 1;
+  filter: drop-shadow(0 2px 6px rgba(7,107,93,0.25));
+  margin-top: 1px;
+}
+.timing-hint .hint-body strong {
+  display: block; font-size: 13px; font-weight: 700;
+  color: var(--teal-dark); letter-spacing: 0.02em;
+  margin-bottom: 3px;
+}
+.timing-hint .hint-body span {
+  display: block; font-size: 12.5px; color: var(--ink-2);
+  line-height: 1.6;
+}
+
+/* ─── DATE SELECTOR ─────────────────────────── */
+.date-selector {
+  background: var(--surface-3);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  padding: 14px 16px;
+  margin-bottom: 18px;
+}
+.date-selector .ds-row {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 12px;
+}
+.date-selector .ds-label {
+  font-size: 11px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.1em; color: var(--teal-dark);
+}
+.date-selector input[type="date"] {
+  border: 1.5px solid var(--border);
+  border-radius: var(--r-sm);
+  padding: 8px 12px;
+  background: #fff;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--ink);
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.date-selector input[type="date"]:focus {
+  border-color: var(--teal);
+  box-shadow: 0 0 0 3px rgba(14,155,136,0.12);
+}
+.ds-quicks { display: flex; gap: 6px; margin-left: auto; }
+.ds-quick {
+  padding: 7px 14px; border-radius: 999px;
+  background: #fff;
+  border: 1px solid var(--border);
+  font-size: 12px; font-weight: 600;
+  color: var(--muted);
+  transition: all 0.2s var(--ease-spring);
+}
+.ds-quick:hover {
+  background: var(--teal-light);
+  color: var(--teal-dark);
+  border-color: var(--border-strong);
+  transform: translateY(-1px);
+}
+.ds-quick.active {
+  background: var(--teal-dark);
+  color: #fff;
+  border-color: transparent;
+}
+.ds-status {
+  font-size: 11.5px; font-weight: 600;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px dashed var(--border);
+  color: var(--muted);
+  letter-spacing: 0.02em;
+}
+.ds-status.editing { color: var(--gold-dark); }
+.ds-status.backfill { color: var(--teal-dark); }
+.ds-status.future { color: var(--danger); }
+
+@media (max-width: 680px) {
+  .date-selector .ds-row { flex-direction: column; align-items: stretch; }
+  .ds-quicks { margin-left: 0; justify-content: stretch; }
+  .ds-quick { flex: 1; }
+}
+
+
+
+/* ─── THEMES ─────────────────────────────────── */
+/* Default (Teal) is already in :root. These override for other themes. */
+
+[data-theme="sunset"] {
+  --teal: #e76f51;
+  --teal-dark: #c34a2c;
+  --teal-deep: #6d2818;
+  --teal-light: #fcd9cb;
+  --teal-xlight: #fdeee7;
+  --gold: #f4a261;
+  --gold-dark: #b45309;
+  --border: rgba(231,111,81,0.16);
+  --border-strong: rgba(231,111,81,0.32);
+  --shadow-sm: 0 2px 8px rgba(109,40,24,0.08);
+  --shadow-md: 0 8px 24px rgba(109,40,24,0.14);
+  --shadow-lg: 0 20px 50px rgba(109,40,24,0.18);
+}
+
+[data-theme="royal"] {
+  --teal: #7c3aed;
+  --teal-dark: #5b21b6;
+  --teal-deep: #2e1065;
+  --teal-light: #ddd6fe;
+  --teal-xlight: #f3f0ff;
+  --gold: #fbbf24;
+  --gold-dark: #b45309;
+  --border: rgba(124,58,237,0.16);
+  --border-strong: rgba(124,58,237,0.32);
+  --shadow-sm: 0 2px 8px rgba(46,16,101,0.10);
+  --shadow-md: 0 8px 24px rgba(46,16,101,0.16);
+  --shadow-lg: 0 20px 50px rgba(46,16,101,0.20);
+}
+
+[data-theme="forest"] {
+  --teal: #16a34a;
+  --teal-dark: #15803d;
+  --teal-deep: #14532d;
+  --teal-light: #bbf7d0;
+  --teal-xlight: #ecfdf5;
+  --gold: #eab308;
+  --gold-dark: #a16207;
+  --border: rgba(22,163,74,0.16);
+  --border-strong: rgba(22,163,74,0.32);
+}
+
+[data-theme="rose"] {
+  --teal: #e11d74;
+  --teal-dark: #be185d;
+  --teal-deep: #831843;
+  --teal-light: #fbcfe8;
+  --teal-xlight: #fdf2f8;
+  --gold: #f59e0b;
+  --gold-dark: #b45309;
+  --border: rgba(225,29,116,0.16);
+  --border-strong: rgba(225,29,116,0.32);
+}
+
+[data-theme="mono"] {
+  --teal: #475569;
+  --teal-dark: #1e293b;
+  --teal-deep: #0f172a;
+  --teal-light: #cbd5e1;
+  --teal-xlight: #f1f5f9;
+  --gold: #f59e0b;
+  --gold-dark: #b45309;
+  --border: rgba(71,85,105,0.16);
+  --border-strong: rgba(71,85,105,0.32);
+}
+
+/* ── DARK THEMES ── */
+[data-theme="midnight"] {
+  --teal: #38bdf8;
+  --teal-dark: #0ea5e9;
+  --teal-deep: #0c4a6e;
+  --teal-light: #1e3a5f;
+  --teal-xlight: #1e293b;
+  --gold: #fbbf24;
+  --gold-dark: #fcd34d;
+  --danger: #f87171;
+  --ink: #f1f5f9;
+  --ink-2: #cbd5e1;
+  --muted: #94a3b8;
+  --muted-2: #64748b;
+  --surface: #1e293b;
+  --surface-2: #0f172a;
+  --surface-3: #334155;
+  --border: rgba(56,189,248,0.18);
+  --border-strong: rgba(56,189,248,0.36);
+  --shadow-sm: 0 2px 8px rgba(0,0,0,0.3);
+  --shadow-md: 0 8px 24px rgba(0,0,0,0.4);
+  --shadow-lg: 0 20px 50px rgba(0,0,0,0.5);
+}
+
+[data-theme="obsidian"] {
+  --teal: #fbbf24;
+  --teal-dark: #d97706;
+  --teal-deep: #78350f;
+  --teal-light: #3f3f46;
+  --teal-xlight: #27272a;
+  --gold: #f59e0b;
+  --gold-dark: #fcd34d;
+  --danger: #f87171;
+  --ink: #fafafa;
+  --ink-2: #d4d4d8;
+  --muted: #a1a1aa;
+  --muted-2: #71717a;
+  --surface: #27272a;
+  --surface-2: #18181b;
+  --surface-3: #3f3f46;
+  --border: rgba(251,191,36,0.18);
+  --border-strong: rgba(251,191,36,0.36);
+  --shadow-sm: 0 2px 8px rgba(0,0,0,0.3);
+  --shadow-md: 0 8px 24px rgba(0,0,0,0.4);
+  --shadow-lg: 0 20px 50px rgba(0,0,0,0.5);
+}
+
+/* Dark theme global tweaks */
+[data-theme="midnight"] body,
+[data-theme="obsidian"] body { background: var(--surface-2); }
+
+[data-theme="midnight"] .bg-canvas,
+[data-theme="obsidian"] .bg-canvas {
+  background: linear-gradient(155deg, var(--surface-2) 0%, var(--surface) 50%, var(--surface-2) 100%);
+}
+[data-theme="midnight"] .orb-1 {
+  background: radial-gradient(circle at 40% 40%, #1e3a5f 0%, #0c4a6e 55%, #0f172a 100%);
+}
+[data-theme="obsidian"] .orb-1 {
+  background: radial-gradient(circle at 40% 40%, #3f3f46 0%, #18181b 55%, #000 100%);
+}
+
+[data-theme="midnight"] .hero-banner,
+[data-theme="obsidian"] .hero-banner {
+  background: linear-gradient(135deg, var(--surface) 0%, var(--surface-3) 50%, var(--teal-light) 100%);
+}
+[data-theme="midnight"] .hero-banner p,
+[data-theme="obsidian"] .hero-banner p { color: var(--ink-2); }
+
+[data-theme="midnight"] .card,
+[data-theme="obsidian"] .card {
+  background: var(--surface);
+  border-color: var(--border);
+}
+
+[data-theme="midnight"] .field-wrap input,
+[data-theme="midnight"] .field-wrap select,
+[data-theme="midnight"] .field-wrap textarea,
+[data-theme="obsidian"] .field-wrap input,
+[data-theme="obsidian"] .field-wrap select,
+[data-theme="obsidian"] .field-wrap textarea {
+  background: var(--surface-3);
+  color: var(--ink);
+}
+
+[data-theme="midnight"] .sidebar,
+[data-theme="obsidian"] .sidebar {
+  background: var(--surface);
+  border-color: var(--border);
+}
+
+[data-theme="midnight"] .date-pill,
+[data-theme="obsidian"] .date-pill,
+[data-theme="midnight"] .fp,
+[data-theme="obsidian"] .fp,
+[data-theme="midnight"] .logo-pill,
+[data-theme="obsidian"] .logo-pill {
+  background: var(--surface);
+}
+
+[data-theme="midnight"] .login-hero::before,
+[data-theme="obsidian"] .login-hero::before {
+  background: linear-gradient(135deg, rgba(15,23,42,0.92) 0%, rgba(30,41,59,0.85) 100%);
+}
+[data-theme="midnight"] .login-panel,
+[data-theme="obsidian"] .login-panel {
+  background: rgba(30,41,59,0.85);
+}
+
+/* ─── THEME SWITCHER — SIDEBAR ──────────────── */
+.theme-row {
+  padding: 14px 6px 8px;
+  border-top: 1px solid var(--border);
+  margin-top: 10px;
+}
+.theme-row-label {
+  font-size: 10px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.12em; color: var(--muted);
+  margin-bottom: 10px;
+  padding: 0 4px;
+}
+.theme-swatches {
+  display: flex; flex-wrap: wrap; gap: 6px;
+  padding: 0 4px;
+}
+.swatch {
+  width: 24px; height: 24px; border-radius: 50%;
+  cursor: pointer;
+  border: 2px solid transparent;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.12), inset 0 1px 2px rgba(255,255,255,0.3);
+  transition: transform 0.2s var(--ease-spring), border-color 0.2s;
+  position: relative;
+}
+.swatch:hover { transform: scale(1.15); }
+.swatch.active { border-color: var(--ink); box-shadow: 0 0 0 2px var(--surface), 0 0 0 4px var(--teal); }
+.swatch-teal     { background: linear-gradient(135deg, #0e9b88, #04403a); }
+.swatch-sunset   { background: linear-gradient(135deg, #e76f51, #6d2818); }
+.swatch-royal    { background: linear-gradient(135deg, #7c3aed, #2e1065); }
+.swatch-forest   { background: linear-gradient(135deg, #16a34a, #14532d); }
+.swatch-rose     { background: linear-gradient(135deg, #e11d74, #831843); }
+.swatch-mono     { background: linear-gradient(135deg, #64748b, #0f172a); }
+.swatch-midnight { background: linear-gradient(135deg, #38bdf8, #0c4a6e); }
+.swatch-obsidian { background: linear-gradient(135deg, #fbbf24, #18181b); }
+
+/* ─── THEME GRID — SETTINGS ─────────────────── */
+.theme-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 12px;
+  margin-top: 8px;
+}
+.theme-card {
+  border: 2px solid var(--border);
+  border-radius: var(--r-md);
+  padding: 14px;
+  background: var(--surface);
+  cursor: pointer;
+  transition: transform 0.2s var(--ease-spring), border-color 0.2s, box-shadow 0.2s;
+  text-align: left;
+}
+.theme-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); border-color: var(--border-strong); }
+.theme-card.active { border-color: var(--teal); box-shadow: 0 0 0 3px rgba(14,155,136,0.15); }
+.theme-preview {
+  display: flex; gap: 4px; margin-bottom: 10px;
+}
+.theme-preview-dot {
+  width: 18px; height: 18px; border-radius: 50%;
+  box-shadow: inset 0 1px 2px rgba(255,255,255,0.3);
+}
+.theme-card-name {
+  font-size: 13px; font-weight: 700; color: var(--ink);
+  letter-spacing: 0.02em;
+}
+.theme-card-tag {
+  font-size: 10px; font-weight: 600; text-transform: uppercase;
+  letter-spacing: 0.08em; color: var(--muted);
+  margin-top: 3px;
+}
+
+/* ─── DAILY PROTOCOL — READABILITY FIX ──────── */
+#protocol .card {
+  background: var(--surface);
+  backdrop-filter: none;
+  border: 1px solid var(--border-strong);
+  box-shadow: var(--shadow-md);
+}
+#protocol .check-tile {
+  background: var(--surface);
+  border: 1.5px solid var(--border-strong);
+  backdrop-filter: none;
+}
+#protocol .check-tile strong {
+  color: var(--ink);
+  font-size: 14px;
+  font-weight: 700;
+}
+#protocol .check-tile span {
+  color: var(--ink-2);
+  font-size: 12px;
+  font-weight: 500;
+}
+#protocol .check-tile:hover {
+  border-color: var(--teal);
+  background: var(--surface);
+}
+#protocol .check-tile:has(input:checked) {
+  background: var(--teal-xlight);
+  border-color: var(--teal);
+}
+#protocol .check-tile:has(input:checked) strong { color: var(--teal-dark); }
+#protocol .date-selector {
+  background: var(--surface);
+  border: 1.5px solid var(--border-strong);
+}
+#protocol .timing-hint {
+  background: var(--surface);
+  border: 1px solid var(--border-strong);
+  border-left: 4px solid var(--teal);
+  backdrop-filter: none;
+}
+#protocol .timing-hint .hint-body strong { color: var(--ink); font-size: 14px; }
+#protocol .timing-hint .hint-body span { color: var(--ink-2); }
+
 </style>
 </head>
 <body>
@@ -750,6 +1139,19 @@ audio { width: 100%; margin-top: 10px; }
       <button class="nav-btn" data-section="weekly"><span class="nav-icon">↗</span> Weekly Review</button>
       <button class="nav-btn" data-section="settings"><span class="nav-icon">⚙</span> Settings</button>
     </nav>
+    <div class="theme-row">
+      <div class="theme-row-label">Theme</div>
+      <div class="theme-swatches" id="themeSwatches">
+        <div class="swatch swatch-teal"     data-theme-pick="teal"     title="Teal"></div>
+        <div class="swatch swatch-sunset"   data-theme-pick="sunset"   title="Sunset"></div>
+        <div class="swatch swatch-royal"    data-theme-pick="royal"    title="Royal"></div>
+        <div class="swatch swatch-forest"   data-theme-pick="forest"   title="Forest"></div>
+        <div class="swatch swatch-rose"     data-theme-pick="rose"     title="Rose"></div>
+        <div class="swatch swatch-mono"     data-theme-pick="mono"     title="Mono"></div>
+        <div class="swatch swatch-midnight" data-theme-pick="midnight" title="Midnight"></div>
+        <div class="swatch swatch-obsidian" data-theme-pick="obsidian" title="Obsidian"></div>
+      </div>
+    </div>
     <div class="sidebar-footer">
       <button id="logoutBtn" class="btn-ghost" style="width:100%;">Logout</button>
     </div>
@@ -911,9 +1313,31 @@ audio { width: 100%; margin-top: 10px; }
         <h2>Daily Protocol</h2>
         <p>Score the day with action-based evidence. Keep your growth measurable.</p>
       </div>
+
+      <div class="timing-hint anim-fadeUp">
+        <div class="hint-icon">🌙</div>
+        <div class="hint-body">
+          <strong>Fill at night, before sleep</strong>
+          <span>The protocol reflects the full day's evidence. Complete it right before — or alongside — your Journal entry. If you're filling after midnight, use the date selector to mark the correct day.</span>
+        </div>
+      </div>
+
       <div class="grid cols-2">
         <div class="card">
-          <h3>Today's Checklist</h3>
+          <h3>Day's Checklist</h3>
+
+          <div class="date-selector">
+            <div class="ds-row">
+              <label class="ds-label">Protocol for</label>
+              <input type="date" id="protocolDate" />
+              <div class="ds-quicks">
+                <button type="button" class="ds-quick" data-offset="0">Today</button>
+                <button type="button" class="ds-quick" data-offset="-1">Yesterday</button>
+              </div>
+            </div>
+            <div class="ds-status" id="dsStatus">○ New entry for today</div>
+          </div>
+
           <form id="protocolForm">
             <div class="check-grid">
               <label class="check-tile">
@@ -955,8 +1379,9 @@ audio { width: 100%; margin-top: 10px; }
             </div>
           </form>
         </div>
+
         <div class="score-panel">
-          <div class="score-label">Today's Score</div>
+          <div class="score-label">Day's Score</div>
           <div class="score-number" id="scorePreview">0</div>
           <div class="score-bar-wrap">
             <div class="score-bar-track"><div class="score-bar-fill" id="scoreBarFill" style="width:0%"></div></div>
@@ -1109,6 +1534,45 @@ audio { width: 100%; margin-top: 10px; }
           <h3>Reset App</h3>
           <p style="color:var(--muted);font-size:14px;margin-bottom:16px;">Delete all local entries from this browser.</p>
           <button id="resetBtn" class="btn-danger">Reset All Data</button>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:16px;">
+        <h3>Color Theme</h3>
+        <p style="color:var(--muted);font-size:14px;margin-bottom:16px;">Pick the interface vibe that matches your focus state. Saves automatically.</p>
+        <div class="theme-grid" id="themeGrid">
+          <button class="theme-card" data-theme-pick="teal">
+            <div class="theme-preview"><div class="theme-preview-dot" style="background:#0e9b88"></div><div class="theme-preview-dot" style="background:#04403a"></div><div class="theme-preview-dot" style="background:#f5c842"></div></div>
+            <div class="theme-card-name">Teal</div><div class="theme-card-tag">Calm Focus</div>
+          </button>
+          <button class="theme-card" data-theme-pick="sunset">
+            <div class="theme-preview"><div class="theme-preview-dot" style="background:#e76f51"></div><div class="theme-preview-dot" style="background:#6d2818"></div><div class="theme-preview-dot" style="background:#f4a261"></div></div>
+            <div class="theme-card-name">Sunset</div><div class="theme-card-tag">Warm Energy</div>
+          </button>
+          <button class="theme-card" data-theme-pick="royal">
+            <div class="theme-preview"><div class="theme-preview-dot" style="background:#7c3aed"></div><div class="theme-preview-dot" style="background:#2e1065"></div><div class="theme-preview-dot" style="background:#fbbf24"></div></div>
+            <div class="theme-card-name">Royal</div><div class="theme-card-tag">Bold Mind</div>
+          </button>
+          <button class="theme-card" data-theme-pick="forest">
+            <div class="theme-preview"><div class="theme-preview-dot" style="background:#16a34a"></div><div class="theme-preview-dot" style="background:#14532d"></div><div class="theme-preview-dot" style="background:#eab308"></div></div>
+            <div class="theme-card-name">Forest</div><div class="theme-card-tag">Grounded</div>
+          </button>
+          <button class="theme-card" data-theme-pick="rose">
+            <div class="theme-preview"><div class="theme-preview-dot" style="background:#e11d74"></div><div class="theme-preview-dot" style="background:#831843"></div><div class="theme-preview-dot" style="background:#f59e0b"></div></div>
+            <div class="theme-card-name">Rose</div><div class="theme-card-tag">Refined</div>
+          </button>
+          <button class="theme-card" data-theme-pick="mono">
+            <div class="theme-preview"><div class="theme-preview-dot" style="background:#475569"></div><div class="theme-preview-dot" style="background:#0f172a"></div><div class="theme-preview-dot" style="background:#f59e0b"></div></div>
+            <div class="theme-card-name">Mono</div><div class="theme-card-tag">Minimal</div>
+          </button>
+          <button class="theme-card" data-theme-pick="midnight">
+            <div class="theme-preview"><div class="theme-preview-dot" style="background:#38bdf8"></div><div class="theme-preview-dot" style="background:#0c4a6e"></div><div class="theme-preview-dot" style="background:#fbbf24"></div></div>
+            <div class="theme-card-name">Midnight</div><div class="theme-card-tag">Dark · Deep Work</div>
+          </button>
+          <button class="theme-card" data-theme-pick="obsidian">
+            <div class="theme-preview"><div class="theme-preview-dot" style="background:#fbbf24"></div><div class="theme-preview-dot" style="background:#18181b"></div><div class="theme-preview-dot" style="background:#d97706"></div></div>
+            <div class="theme-card-name">Obsidian</div><div class="theme-card-tag">Dark · Stealth</div>
+          </button>
         </div>
       </div>
     </section>
@@ -1354,6 +1818,24 @@ window.deleteItem = (col, id) => {
 };
 
 document.addEventListener('DOMContentLoaded', () => {
+
+  // ─── THEME SWITCHER ─────────────────────────
+  const THEME_KEY = 'corepilotOSTheme';
+
+  function applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem(THEME_KEY, theme);
+    document.querySelectorAll('[data-theme-pick]').forEach(el =>
+      el.classList.toggle('active', el.dataset.themePick === theme));
+  }
+
+  const savedTheme = localStorage.getItem(THEME_KEY) || 'teal';
+  applyTheme(savedTheme);
+
+  document.querySelectorAll('[data-theme-pick]').forEach(el => {
+    el.addEventListener('click', () => applyTheme(el.dataset.themePick));
+  });
+
   document.getElementById('todayDate').textContent = new Date().toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
 
   if (sessionStorage.getItem(SESSION_KEY) === 'true') {
@@ -1391,7 +1873,11 @@ document.addEventListener('DOMContentLoaded', () => {
   document.querySelectorAll('[data-clear]').forEach(btn =>
     btn.addEventListener('click', () => document.getElementById(btn.dataset.clear).reset()));
 
-  // Score preview with animation
+  // ─── PROTOCOL DATE SELECTOR ──────────────
+  const protocolDateInput = document.getElementById('protocolDate');
+  const dsStatus = document.getElementById('dsStatus');
+  const quickBtns = document.querySelectorAll('.ds-quick');
+
   const updateScorePreview = () => {
     const vals = checkboxValues(document.getElementById('protocolForm'));
     const score = calculateScore(vals);
@@ -1399,9 +1885,76 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('scoreBarFill').style.width = score + '%';
   };
 
+  function loadProtocolForDate(date) {
+    const today = todayISO();
+    const entry = data.dailyProtocol.find(x => x.date === date);
+    const form = document.getElementById('protocolForm');
+
+    Object.keys(weights).forEach(k => {
+      if (form[k]) form[k].checked = !!(entry && entry[k]);
+    });
+    updateScorePreview();
+
+    if (entry) {
+      dsStatus.textContent = `◉ Editing saved entry (${entry.score || 0}/100)`;
+      dsStatus.className = 'ds-status editing';
+    } else if (date === today) {
+      dsStatus.textContent = '○ New entry for today';
+      dsStatus.className = 'ds-status';
+    } else if (date < today) {
+      dsStatus.textContent = '◐ Backfilling — date is in the past';
+      dsStatus.className = 'ds-status backfill';
+    } else {
+      dsStatus.textContent = '⚠ Future date — not recommended';
+      dsStatus.className = 'ds-status future';
+    }
+
+    // Highlight active quick button
+    quickBtns.forEach(btn => {
+      const d = new Date();
+      d.setDate(d.getDate() + parseInt(btn.dataset.offset));
+      btn.classList.toggle('active', d.toISOString().slice(0, 10) === date);
+    });
+  }
+
+  protocolDateInput.value = todayISO();
+  protocolDateInput.max = todayISO();
+  loadProtocolForDate(todayISO());
+
+  protocolDateInput.addEventListener('change', e => {
+    loadProtocolForDate(e.target.value || todayISO());
+  });
+
+  quickBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const d = new Date();
+      d.setDate(d.getDate() + parseInt(btn.dataset.offset));
+      const dateStr = d.toISOString().slice(0, 10);
+      protocolDateInput.value = dateStr;
+      loadProtocolForDate(dateStr);
+    });
+  });
+
+  document.getElementById('protocolForm').addEventListener('submit', e => {
+    e.preventDefault();
+    const date = protocolDateInput.value || todayISO();
+    const vals = checkboxValues(e.target);
+    const score = calculateScore(vals);
+    const existing = data.dailyProtocol.find(x => x.date === date);
+    upsertByDate('dailyProtocol', {
+      ...vals,
+      id: existing?.id || uid(),
+      date,
+      score
+    });
+    document.getElementById('scorePreview').textContent = score;
+    document.getElementById('scoreBarFill').style.width = score + '%';
+    saveData();
+    setSection('dashboard');
+  });
+
   document.getElementById('protocolForm').querySelectorAll('input[type=checkbox]').forEach(cb =>
     cb.addEventListener('change', updateScorePreview));
-
   document.getElementById('previewScoreBtn').addEventListener('click', updateScorePreview);
 
   document.getElementById('morningForm').addEventListener('submit', e => {
@@ -1425,16 +1978,6 @@ document.addEventListener('DOMContentLoaded', () => {
     data.morningMethods.push({ ...obj, id: uid(), createdAt: todayISO() });
     e.target.reset();
     saveData();
-  });
-
-  document.getElementById('protocolForm').addEventListener('submit', e => {
-    e.preventDefault();
-    const vals = checkboxValues(e.target);
-    const score = calculateScore(vals);
-    upsertByDate('dailyProtocol', { ...vals, id: getTodayEntry('dailyProtocol')?.id || uid(), date: todayISO(), score });
-    document.getElementById('scorePreview').textContent = score;
-    document.getElementById('scoreBarFill').style.width = score + '%';
-    saveData(); setSection('dashboard');
   });
 
   document.getElementById('journalForm').addEventListener('submit', e => {
