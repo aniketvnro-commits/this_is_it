@@ -677,6 +677,101 @@ audio { width: 100%; margin-top: 10px; }
   .date-pill { width: 100%; justify-content: center; }
   .sidebar { left: 10px; right: 10px; top: 10px; max-height: calc(100vh - 20px); }
 }
+
+/* ─── TIMING HINT ───────────────────────────── */
+.timing-hint {
+  display: flex; align-items: flex-start; gap: 14px;
+  background: linear-gradient(135deg, rgba(14,155,136,0.08) 0%, rgba(245,200,66,0.10) 100%);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--teal);
+  border-radius: var(--r-md);
+  padding: 14px 18px;
+  margin-bottom: 20px;
+  backdrop-filter: blur(8px);
+}
+.timing-hint .hint-icon {
+  font-size: 22px; line-height: 1;
+  filter: drop-shadow(0 2px 6px rgba(7,107,93,0.25));
+  margin-top: 1px;
+}
+.timing-hint .hint-body strong {
+  display: block; font-size: 13px; font-weight: 700;
+  color: var(--teal-dark); letter-spacing: 0.02em;
+  margin-bottom: 3px;
+}
+.timing-hint .hint-body span {
+  display: block; font-size: 12.5px; color: var(--ink-2);
+  line-height: 1.6;
+}
+
+/* ─── DATE SELECTOR ─────────────────────────── */
+.date-selector {
+  background: var(--surface-3);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  padding: 14px 16px;
+  margin-bottom: 18px;
+}
+.date-selector .ds-row {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 12px;
+}
+.date-selector .ds-label {
+  font-size: 11px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.1em; color: var(--teal-dark);
+}
+.date-selector input[type="date"] {
+  border: 1.5px solid var(--border);
+  border-radius: var(--r-sm);
+  padding: 8px 12px;
+  background: #fff;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--ink);
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.date-selector input[type="date"]:focus {
+  border-color: var(--teal);
+  box-shadow: 0 0 0 3px rgba(14,155,136,0.12);
+}
+.ds-quicks { display: flex; gap: 6px; margin-left: auto; }
+.ds-quick {
+  padding: 7px 14px; border-radius: 999px;
+  background: #fff;
+  border: 1px solid var(--border);
+  font-size: 12px; font-weight: 600;
+  color: var(--muted);
+  transition: all 0.2s var(--ease-spring);
+}
+.ds-quick:hover {
+  background: var(--teal-light);
+  color: var(--teal-dark);
+  border-color: var(--border-strong);
+  transform: translateY(-1px);
+}
+.ds-quick.active {
+  background: var(--teal-dark);
+  color: #fff;
+  border-color: transparent;
+}
+.ds-status {
+  font-size: 11.5px; font-weight: 600;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px dashed var(--border);
+  color: var(--muted);
+  letter-spacing: 0.02em;
+}
+.ds-status.editing { color: var(--gold-dark); }
+.ds-status.backfill { color: var(--teal-dark); }
+.ds-status.future { color: var(--danger); }
+
+@media (max-width: 680px) {
+  .date-selector .ds-row { flex-direction: column; align-items: stretch; }
+  .ds-quicks { margin-left: 0; justify-content: stretch; }
+  .ds-quick { flex: 1; }
+}
+
 </style>
 </head>
 <body>
@@ -911,9 +1006,31 @@ audio { width: 100%; margin-top: 10px; }
         <h2>Daily Protocol</h2>
         <p>Score the day with action-based evidence. Keep your growth measurable.</p>
       </div>
+
+      <div class="timing-hint anim-fadeUp">
+        <div class="hint-icon">🌙</div>
+        <div class="hint-body">
+          <strong>Fill at night, before sleep</strong>
+          <span>The protocol reflects the full day's evidence. Complete it right before — or alongside — your Journal entry. If you're filling after midnight, use the date selector to mark the correct day.</span>
+        </div>
+      </div>
+
       <div class="grid cols-2">
         <div class="card">
-          <h3>Today's Checklist</h3>
+          <h3>Day's Checklist</h3>
+
+          <div class="date-selector">
+            <div class="ds-row">
+              <label class="ds-label">Protocol for</label>
+              <input type="date" id="protocolDate" />
+              <div class="ds-quicks">
+                <button type="button" class="ds-quick" data-offset="0">Today</button>
+                <button type="button" class="ds-quick" data-offset="-1">Yesterday</button>
+              </div>
+            </div>
+            <div class="ds-status" id="dsStatus">○ New entry for today</div>
+          </div>
+
           <form id="protocolForm">
             <div class="check-grid">
               <label class="check-tile">
@@ -955,8 +1072,9 @@ audio { width: 100%; margin-top: 10px; }
             </div>
           </form>
         </div>
+
         <div class="score-panel">
-          <div class="score-label">Today's Score</div>
+          <div class="score-label">Day's Score</div>
           <div class="score-number" id="scorePreview">0</div>
           <div class="score-bar-wrap">
             <div class="score-bar-track"><div class="score-bar-fill" id="scoreBarFill" style="width:0%"></div></div>
@@ -1391,7 +1509,11 @@ document.addEventListener('DOMContentLoaded', () => {
   document.querySelectorAll('[data-clear]').forEach(btn =>
     btn.addEventListener('click', () => document.getElementById(btn.dataset.clear).reset()));
 
-  // Score preview with animation
+  // ─── PROTOCOL DATE SELECTOR ──────────────
+  const protocolDateInput = document.getElementById('protocolDate');
+  const dsStatus = document.getElementById('dsStatus');
+  const quickBtns = document.querySelectorAll('.ds-quick');
+
   const updateScorePreview = () => {
     const vals = checkboxValues(document.getElementById('protocolForm'));
     const score = calculateScore(vals);
@@ -1399,9 +1521,76 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('scoreBarFill').style.width = score + '%';
   };
 
+  function loadProtocolForDate(date) {
+    const today = todayISO();
+    const entry = data.dailyProtocol.find(x => x.date === date);
+    const form = document.getElementById('protocolForm');
+
+    Object.keys(weights).forEach(k => {
+      if (form[k]) form[k].checked = !!(entry && entry[k]);
+    });
+    updateScorePreview();
+
+    if (entry) {
+      dsStatus.textContent = `◉ Editing saved entry (${entry.score || 0}/100)`;
+      dsStatus.className = 'ds-status editing';
+    } else if (date === today) {
+      dsStatus.textContent = '○ New entry for today';
+      dsStatus.className = 'ds-status';
+    } else if (date < today) {
+      dsStatus.textContent = '◐ Backfilling — date is in the past';
+      dsStatus.className = 'ds-status backfill';
+    } else {
+      dsStatus.textContent = '⚠ Future date — not recommended';
+      dsStatus.className = 'ds-status future';
+    }
+
+    // Highlight active quick button
+    quickBtns.forEach(btn => {
+      const d = new Date();
+      d.setDate(d.getDate() + parseInt(btn.dataset.offset));
+      btn.classList.toggle('active', d.toISOString().slice(0, 10) === date);
+    });
+  }
+
+  protocolDateInput.value = todayISO();
+  protocolDateInput.max = todayISO();
+  loadProtocolForDate(todayISO());
+
+  protocolDateInput.addEventListener('change', e => {
+    loadProtocolForDate(e.target.value || todayISO());
+  });
+
+  quickBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const d = new Date();
+      d.setDate(d.getDate() + parseInt(btn.dataset.offset));
+      const dateStr = d.toISOString().slice(0, 10);
+      protocolDateInput.value = dateStr;
+      loadProtocolForDate(dateStr);
+    });
+  });
+
+  document.getElementById('protocolForm').addEventListener('submit', e => {
+    e.preventDefault();
+    const date = protocolDateInput.value || todayISO();
+    const vals = checkboxValues(e.target);
+    const score = calculateScore(vals);
+    const existing = data.dailyProtocol.find(x => x.date === date);
+    upsertByDate('dailyProtocol', {
+      ...vals,
+      id: existing?.id || uid(),
+      date,
+      score
+    });
+    document.getElementById('scorePreview').textContent = score;
+    document.getElementById('scoreBarFill').style.width = score + '%';
+    saveData();
+    setSection('dashboard');
+  });
+
   document.getElementById('protocolForm').querySelectorAll('input[type=checkbox]').forEach(cb =>
     cb.addEventListener('change', updateScorePreview));
-
   document.getElementById('previewScoreBtn').addEventListener('click', updateScorePreview);
 
   document.getElementById('morningForm').addEventListener('submit', e => {
@@ -1425,16 +1614,6 @@ document.addEventListener('DOMContentLoaded', () => {
     data.morningMethods.push({ ...obj, id: uid(), createdAt: todayISO() });
     e.target.reset();
     saveData();
-  });
-
-  document.getElementById('protocolForm').addEventListener('submit', e => {
-    e.preventDefault();
-    const vals = checkboxValues(e.target);
-    const score = calculateScore(vals);
-    upsertByDate('dailyProtocol', { ...vals, id: getTodayEntry('dailyProtocol')?.id || uid(), date: todayISO(), score });
-    document.getElementById('scorePreview').textContent = score;
-    document.getElementById('scoreBarFill').style.width = score + '%';
-    saveData(); setSection('dashboard');
   });
 
   document.getElementById('journalForm').addEventListener('submit', e => {
