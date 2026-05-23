@@ -1,0 +1,1517 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>CorePilot OS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,700;1,9..40,300&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --teal: #0e9b88;
+  --teal-dark: #076b5d;
+  --teal-deep: #04403a;
+  --teal-light: #c5f5ec;
+  --teal-xlight: #eafaf7;
+  --gold: #f5c842;
+  --gold-dark: #c49a0a;
+  --danger: #e05252;
+  --ink: #111a1e;
+  --ink-2: #2c3840;
+  --muted: #6e848d;
+  --muted-2: #9bb3bc;
+  --surface: #ffffff;
+  --surface-2: #f3f8f7;
+  --surface-3: #e8f4f1;
+  --border: rgba(14,155,136,0.14);
+  --border-strong: rgba(14,155,136,0.28);
+  --shadow-sm: 0 2px 8px rgba(4,64,58,0.08);
+  --shadow-md: 0 8px 24px rgba(4,64,58,0.12);
+  --shadow-lg: 0 20px 50px rgba(4,64,58,0.16);
+  --r-sm: 12px;
+  --r-md: 18px;
+  --r-lg: 26px;
+  --r-xl: 36px;
+  --font-display: 'Bebas Neue', sans-serif;
+  --font-body: 'DM Sans', sans-serif;
+  --font-mono: 'DM Mono', monospace;
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--font-body);
+  color: var(--ink);
+  background: var(--surface-2);
+  min-height: 100vh;
+  overflow-x: hidden;
+  font-size: 15px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+button, input, textarea, select { font-family: inherit; }
+button { cursor: pointer; border: none; background: none; }
+.hidden { display: none !important; }
+
+/* ─── ANIMATIONS ─────────────────────────────── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(22px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeIn {
+  from { opacity: 0; } to { opacity: 1; }
+}
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.92); }
+  to   { opacity: 1; transform: scale(1); }
+}
+@keyframes slideRight {
+  from { opacity: 0; transform: translateX(-20px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+@keyframes shimmer {
+  0%   { background-position: -400px 0; }
+  100% { background-position: 400px 0; }
+}
+@keyframes pulse-ring {
+  0%   { transform: scale(1); opacity: 0.7; }
+  100% { transform: scale(1.6); opacity: 0; }
+}
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-8px); }
+}
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+@keyframes countUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes gradientShift {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+@keyframes orb-float {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33%       { transform: translate(30px, -20px) scale(1.04); }
+  66%       { transform: translate(-20px, 15px) scale(0.97); }
+}
+
+.anim-fadeUp   { animation: fadeUp 0.55s var(--ease-out) both; }
+.anim-scaleIn  { animation: scaleIn 0.45s var(--ease-spring) both; }
+.anim-fadeIn   { animation: fadeIn 0.4s ease both; }
+.d1 { animation-delay: 0.05s; }
+.d2 { animation-delay: 0.1s; }
+.d3 { animation-delay: 0.15s; }
+.d4 { animation-delay: 0.2s; }
+.d5 { animation-delay: 0.25s; }
+.d6 { animation-delay: 0.3s; }
+
+/* ─── BG CANVAS ──────────────────────────────── */
+.bg-canvas {
+  position: fixed; inset: 0; z-index: 0; overflow: hidden; pointer-events: none;
+  background: linear-gradient(155deg, #ddf4ef 0%, #f6fdfb 50%, #e4f2f0 100%);
+}
+.orb {
+  position: absolute; border-radius: 50%; filter: blur(0px);
+}
+.orb-1 {
+  width: 700px; height: 700px; left: -250px; top: -180px;
+  background: radial-gradient(circle at 40% 40%, #0e9b88 0%, #076b5d 55%, #04403a 100%);
+  animation: orb-float 18s ease-in-out infinite;
+}
+.orb-2 {
+  width: 380px; height: 380px; right: -100px; bottom: -120px;
+  background: radial-gradient(circle, rgba(197,245,236,0.9) 0%, rgba(197,245,236,0.2) 100%);
+  animation: orb-float 22s ease-in-out infinite reverse;
+}
+.orb-3 {
+  width: 200px; height: 200px; right: 200px; top: 30%;
+  background: radial-gradient(circle, rgba(245,200,66,0.22) 0%, transparent 70%);
+  animation: orb-float 14s ease-in-out infinite 3s;
+}
+.noise-overlay {
+  position: absolute; inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.025'/%3E%3C/svg%3E");
+  opacity: 0.4;
+}
+
+/* ─── LOGIN ──────────────────────────────────── */
+#loginScreen {
+  position: relative; z-index: 10;
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 1.3fr 0.7fr;
+  gap: 0;
+  align-items: stretch;
+}
+.login-hero {
+  position: relative;
+  padding: 60px 64px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  overflow: hidden;
+  min-height: 100vh;
+}
+.login-hero::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.92) 0%, rgba(234,250,247,0.85) 100%);
+  backdrop-filter: blur(2px);
+}
+.login-hero > * { position: relative; z-index: 2; }
+
+.logo-pill {
+  display: inline-flex; align-items: center; gap: 10px;
+  background: rgba(255,255,255,0.9);
+  border: 1px solid var(--border-strong);
+  border-radius: 999px;
+  padding: 8px 16px 8px 8px;
+  box-shadow: var(--shadow-sm);
+  animation: fadeIn 0.5s ease both;
+}
+.logo-icon {
+  width: 32px; height: 32px; border-radius: 50%;
+  background: var(--teal);
+  display: grid; place-items: center;
+  color: white; font-weight: 700; font-size: 16px;
+  font-family: var(--font-display);
+  letter-spacing: 0.02em;
+}
+.logo-pill span { font-weight: 700; font-size: 14px; color: var(--teal-dark); letter-spacing: 0.04em; text-transform: uppercase; }
+
+.hero-copy { flex: 1; display: flex; flex-direction: column; justify-content: center; padding: 60px 0 40px; }
+.hero-eyebrow {
+  font-size: 11px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase;
+  color: var(--teal); margin-bottom: 20px;
+  animation: fadeUp 0.5s var(--ease-out) 0.1s both;
+}
+.hero-copy h1 {
+  font-family: var(--font-display);
+  font-size: clamp(60px, 7vw, 100px);
+  line-height: 0.9;
+  letter-spacing: 0.01em;
+  color: var(--ink);
+  margin-bottom: 28px;
+  animation: fadeUp 0.6s var(--ease-out) 0.18s both;
+}
+.hero-copy h1 em {
+  font-style: normal;
+  color: var(--teal);
+  display: block;
+}
+.hero-copy p {
+  max-width: 460px;
+  color: var(--muted);
+  font-size: 16px;
+  line-height: 1.75;
+  animation: fadeUp 0.6s var(--ease-out) 0.26s both;
+}
+
+.feature-pills {
+  display: flex; flex-wrap: wrap; gap: 10px;
+  animation: fadeUp 0.6s var(--ease-out) 0.34s both;
+}
+.fp {
+  display: flex; align-items: center; gap: 8px;
+  padding: 10px 16px;
+  background: rgba(255,255,255,0.85);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  font-size: 13px; font-weight: 500; color: var(--ink-2);
+  backdrop-filter: blur(8px);
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.2s var(--ease-spring), box-shadow 0.2s ease;
+}
+.fp:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+.fp-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--teal); }
+.fp-dot.gold { background: var(--gold-dark); }
+.fp-dot.teal2 { background: #2dc8b0; }
+.fp-dot.ink { background: var(--ink-2); }
+.fp-dot.muted { background: var(--muted-2); }
+
+.login-panel {
+  background: rgba(255,255,255,0.75);
+  backdrop-filter: blur(24px) saturate(1.4);
+  border-left: 1px solid rgba(255,255,255,0.6);
+  display: flex; flex-direction: column; justify-content: center;
+  padding: 60px 48px;
+  position: relative; z-index: 10;
+  animation: slideRight 0.6s var(--ease-out) 0.1s both;
+}
+.login-panel h2 {
+  font-family: var(--font-display);
+  font-size: 44px;
+  letter-spacing: 0.02em;
+  color: var(--ink);
+  margin-bottom: 6px;
+}
+.login-panel > p { color: var(--muted); margin-bottom: 36px; font-size: 14px; line-height: 1.65; }
+.login-panel > p strong { color: var(--teal-dark); font-family: var(--font-mono); }
+
+.field-wrap { margin-bottom: 18px; }
+.field-wrap label { display: block; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--teal-dark); margin-bottom: 8px; }
+.field-wrap input, .field-wrap select, .field-wrap textarea {
+  width: 100%;
+  border: 1.5px solid var(--border);
+  border-radius: var(--r-md);
+  padding: 13px 16px;
+  background: rgba(255,255,255,0.9);
+  color: var(--ink);
+  outline: none;
+  font-size: 15px;
+  transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+}
+.field-wrap textarea { min-height: 110px; resize: vertical; line-height: 1.6; }
+.field-wrap input:focus, .field-wrap select:focus, .field-wrap textarea:focus {
+  border-color: var(--teal);
+  box-shadow: 0 0 0 4px rgba(14,155,136,0.12);
+  background: #fff;
+}
+
+.btn-primary {
+  width: 100%; padding: 14px; border-radius: var(--r-md);
+  background: var(--teal-dark);
+  color: white; font-size: 15px; font-weight: 700;
+  letter-spacing: 0.04em;
+  box-shadow: 0 8px 24px rgba(7,107,93,0.3);
+  transition: transform 0.2s var(--ease-spring), box-shadow 0.2s;
+  position: relative; overflow: hidden;
+}
+.btn-primary::after {
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.12) 0%, transparent 60%);
+  pointer-events: none;
+}
+.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 12px 32px rgba(7,107,93,0.38); }
+.btn-primary:active { transform: translateY(0); }
+
+.btn-secondary {
+  padding: 11px 18px; border-radius: var(--r-sm);
+  background: var(--surface-3);
+  color: var(--teal-dark); font-size: 14px; font-weight: 600;
+  border: 1px solid var(--border);
+  transition: background 0.2s, transform 0.2s var(--ease-spring);
+}
+.btn-secondary:hover { background: var(--teal-light); transform: translateY(-1px); }
+
+.btn-ghost {
+  padding: 11px 18px; border-radius: var(--r-sm);
+  color: var(--muted); font-size: 14px; font-weight: 500;
+  border: 1px solid var(--border);
+  background: transparent;
+  transition: all 0.2s;
+}
+.btn-ghost:hover { border-color: var(--border-strong); color: var(--teal-dark); background: var(--teal-xlight); }
+
+.btn-danger {
+  padding: 11px 18px; border-radius: var(--r-sm);
+  background: #fff1f1; color: var(--danger); font-size: 14px; font-weight: 600;
+  border: 1px solid rgba(224,82,82,0.18);
+  transition: all 0.2s;
+}
+.btn-danger:hover { background: #ffe0e0; transform: translateY(-1px); }
+
+.error-msg { color: var(--danger); font-size: 13px; font-weight: 600; margin-top: 10px; min-height: 20px; }
+
+/* ─── APP SHELL ──────────────────────────────── */
+#appShell {
+  position: relative; z-index: 10;
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 270px minmax(0, 1fr);
+  padding: 20px;
+  gap: 20px;
+}
+
+/* ─── SIDEBAR ─────────────────────────────────── */
+.sidebar {
+  position: sticky; top: 20px; align-self: start;
+  height: calc(100vh - 40px);
+  border-radius: var(--r-xl);
+  background: rgba(255,255,255,0.82);
+  backdrop-filter: blur(20px) saturate(1.4);
+  border: 1px solid rgba(255,255,255,0.75);
+  box-shadow: var(--shadow-md);
+  padding: 24px 18px;
+  display: flex; flex-direction: column;
+  animation: scaleIn 0.5s var(--ease-spring) both;
+}
+.brand {
+  display: flex; align-items: center; gap: 12px;
+  padding: 4px 8px 20px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 18px;
+}
+.brand-text h2 { font-family: var(--font-display); font-size: 20px; letter-spacing: 0.04em; color: var(--ink); line-height: 1; }
+.brand-text p { font-size: 11px; color: var(--muted-2); font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; margin-top: 2px; }
+
+.nav { display: flex; flex-direction: column; gap: 4px; }
+.nav-btn {
+  width: 100%; text-align: left;
+  border-radius: var(--r-md);
+  padding: 11px 14px;
+  display: flex; align-items: center; gap: 10px;
+  font-size: 14px; font-weight: 600; color: var(--muted);
+  transition: all 0.22s var(--ease-out);
+  position: relative;
+}
+.nav-btn .nav-icon { font-size: 16px; width: 20px; text-align: center; opacity: 0.7; transition: opacity 0.2s; }
+.nav-btn:hover { background: var(--teal-xlight); color: var(--teal-dark); }
+.nav-btn:hover .nav-icon { opacity: 1; }
+.nav-btn.active {
+  background: var(--teal-dark);
+  color: white;
+  box-shadow: 0 8px 24px rgba(7,107,93,0.28);
+}
+.nav-btn.active .nav-icon { opacity: 1; }
+.nav-btn.active::before {
+  content: '';
+  position: absolute; left: 0; top: 20%; bottom: 20%;
+  width: 3px; border-radius: 2px;
+  background: rgba(255,255,255,0.5);
+}
+
+.sidebar-footer {
+  margin-top: auto; padding-top: 16px;
+  border-top: 1px solid var(--border);
+}
+
+/* ─── MAIN ───────────────────────────────────── */
+.main-content { min-width: 0; }
+
+.topbar {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 24px;
+  animation: fadeUp 0.45s var(--ease-out) 0.05s both;
+}
+.topbar-left { display: flex; align-items: center; gap: 14px; }
+.page-title {
+  font-family: var(--font-display);
+  font-size: 42px; letter-spacing: 0.02em; color: var(--ink); line-height: 1;
+}
+.date-pill {
+  display: flex; align-items: center; gap: 8px;
+  padding: 10px 18px;
+  background: rgba(255,255,255,0.85);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  font-size: 13px; font-weight: 600; color: var(--teal-dark);
+  box-shadow: var(--shadow-sm);
+  backdrop-filter: blur(8px);
+}
+.date-dot {
+  width: 8px; height: 8px; border-radius: 50%; background: var(--teal);
+  box-shadow: 0 0 0 0 rgba(14,155,136,0.5);
+  animation: pulse-ring 2s ease infinite;
+  position: relative;
+}
+
+/* ─── SECTIONS ───────────────────────────────── */
+.section { display: none; }
+.section.active { display: block; }
+
+/* Hero banner */
+.hero-banner {
+  position: relative; overflow: hidden;
+  border-radius: var(--r-xl);
+  background: linear-gradient(135deg, #fff 0%, #edfaf7 50%, #b8f4dc 100%);
+  box-shadow: var(--shadow-lg);
+  padding: 36px 40px;
+  margin-bottom: 22px;
+  animation: fadeUp 0.55s var(--ease-out) 0.05s both;
+}
+.hero-banner::after {
+  content: '';
+  position: absolute;
+  width: 420px; height: 420px; border-radius: 50%;
+  right: -120px; top: -130px;
+  background: radial-gradient(circle, rgba(14,155,136,0.75) 0%, rgba(7,107,93,0.9) 100%);
+  pointer-events: none;
+}
+.hero-banner > * { position: relative; z-index: 1; }
+.hero-banner h2 {
+  font-family: var(--font-display);
+  font-size: clamp(32px, 4vw, 52px);
+  letter-spacing: 0.02em;
+  color: var(--ink); line-height: 1;
+  margin-bottom: 10px;
+}
+.hero-banner p { color: var(--muted); font-size: 15px; line-height: 1.7; max-width: 600px; }
+
+/* Cards */
+.card {
+  background: rgba(255,255,255,0.88);
+  border: 1px solid rgba(255,255,255,0.8);
+  border-radius: var(--r-lg);
+  padding: 22px;
+  box-shadow: var(--shadow-sm);
+  backdrop-filter: blur(8px);
+  transition: box-shadow 0.2s, transform 0.2s var(--ease-spring);
+}
+.card:hover { box-shadow: var(--shadow-md); }
+.card h3 { font-family: var(--font-display); font-size: 22px; letter-spacing: 0.03em; color: var(--ink); margin-bottom: 16px; line-height: 1; }
+
+/* Metric cards */
+.metric-card {
+  min-height: 140px;
+  display: flex; flex-direction: column; justify-content: space-between;
+}
+.metric-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); }
+.metric-value {
+  font-family: var(--font-display);
+  font-size: 40px; letter-spacing: 0.02em; color: var(--ink);
+  line-height: 1; margin: 8px 0 4px;
+  animation: countUp 0.5s var(--ease-out) both;
+}
+.metric-note { font-size: 12px; color: var(--muted-2); line-height: 1.45; }
+
+/* Grid layouts */
+.grid { display: grid; gap: 16px; }
+.cols-4 { grid-template-columns: repeat(4, minmax(0,1fr)); }
+.cols-3 { grid-template-columns: repeat(3, minmax(0,1fr)); }
+.cols-2 { grid-template-columns: repeat(2, minmax(0,1fr)); }
+
+/* Form grid */
+.form-grid { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 16px; }
+.full { grid-column: 1 / -1; }
+.actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 18px; }
+
+/* Check tiles */
+.check-grid { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 10px; }
+.check-tile {
+  border: 1.5px solid var(--border);
+  border-radius: var(--r-md);
+  padding: 14px;
+  background: rgba(255,255,255,0.7);
+  display: flex; gap: 10px; align-items: flex-start;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s, transform 0.2s var(--ease-spring), box-shadow 0.2s;
+  user-select: none;
+  min-height: 90px;
+}
+.check-tile:hover { transform: translateY(-2px); box-shadow: var(--shadow-sm); border-color: var(--border-strong); }
+.check-tile input[type="checkbox"] { width: auto; margin-top: 3px; accent-color: var(--teal); flex-shrink: 0; }
+.check-tile input[type="checkbox"]:checked ~ div strong { color: var(--teal-dark); }
+.check-tile:has(input:checked) {
+  background: var(--teal-xlight);
+  border-color: var(--teal);
+  box-shadow: 0 0 0 3px rgba(14,155,136,0.1);
+}
+.check-tile strong { display: block; font-size: 13px; margin-bottom: 3px; color: var(--ink-2); }
+.check-tile span { font-size: 11px; color: var(--muted); line-height: 1.4; }
+
+/* Score preview */
+.score-panel {
+  border-radius: var(--r-lg);
+  background: linear-gradient(135deg, var(--teal-dark) 0%, var(--teal-deep) 100%);
+  padding: 28px;
+  color: white;
+  box-shadow: 0 16px 40px rgba(4,64,58,0.3);
+  position: relative; overflow: hidden;
+}
+.score-panel::before {
+  content: '';
+  position: absolute;
+  width: 300px; height: 300px; border-radius: 50%;
+  right: -80px; top: -80px;
+  background: rgba(255,255,255,0.05);
+}
+.score-number {
+  font-family: var(--font-display);
+  font-size: 88px;
+  letter-spacing: -0.02em;
+  line-height: 1;
+  margin: 12px 0;
+  text-shadow: 0 4px 20px rgba(0,0,0,0.2);
+}
+.score-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.14em; opacity: 0.65; }
+.score-note { font-size: 12px; opacity: 0.6; line-height: 1.55; margin-top: 12px; }
+.score-bar-wrap { margin-top: 16px; }
+.score-bar-track { height: 6px; background: rgba(255,255,255,0.15); border-radius: 99px; overflow: hidden; }
+.score-bar-fill { height: 100%; background: var(--gold); border-radius: 99px; transition: width 0.6s var(--ease-out); }
+
+/* List items */
+.list { display: flex; flex-direction: column; gap: 10px; margin-top: 12px; }
+.list-item {
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  padding: 14px 16px;
+  background: rgba(255,255,255,0.72);
+  display: grid; grid-template-columns: minmax(0,1fr) auto;
+  gap: 14px; align-items: start;
+  transition: transform 0.2s var(--ease-spring), box-shadow 0.2s;
+  animation: fadeUp 0.4s var(--ease-out) both;
+}
+.list-item:hover { transform: translateX(4px); box-shadow: var(--shadow-sm); }
+.list-item h4 { font-size: 15px; font-weight: 700; color: var(--ink); margin-bottom: 4px; }
+.list-item p { font-size: 13px; color: var(--muted); line-height: 1.5; }
+
+/* Badges */
+a.badge { text-decoration: none; }
+.badge-row { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+.badge {
+  padding: 4px 10px; border-radius: 999px;
+  font-size: 11px; font-weight: 700;
+  background: var(--teal-xlight); color: var(--teal-dark);
+  border: 1px solid var(--border);
+  letter-spacing: 0.02em;
+}
+.badge.dark { background: var(--teal-dark); color: white; border-color: transparent; }
+.badge.gold { background: rgba(245,200,66,0.2); color: var(--gold-dark); border-color: rgba(245,200,66,0.4); }
+.badge.status-done { background: rgba(16,185,129,0.1); color: #047857; border-color: rgba(16,185,129,0.2); }
+.badge.status-wip { background: rgba(245,200,66,0.15); color: #92400e; border-color: rgba(245,200,66,0.3); }
+
+/* Audio box */
+.audio-box {
+  border: 1.5px dashed var(--border-strong);
+  border-radius: var(--r-md);
+  padding: 16px;
+  background: rgba(197,245,236,0.25);
+}
+audio { width: 100%; margin-top: 10px; }
+
+/* Weekly prompt box */
+#aiPrompt {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  line-height: 1.7;
+  background: var(--ink);
+  color: #b8f4dc;
+  border: none;
+  border-radius: var(--r-md);
+  padding: 18px;
+  min-height: 260px;
+  resize: vertical;
+}
+
+/* Progress indicator strip */
+.progress-strip {
+  display: flex; gap: 6px; margin-bottom: 22px;
+  animation: fadeUp 0.45s var(--ease-out) 0.1s both;
+}
+.strip-item {
+  flex: 1; height: 5px; border-radius: 99px;
+  background: var(--border);
+  overflow: hidden; position: relative;
+}
+.strip-fill {
+  position: absolute; left: 0; top: 0; bottom: 0;
+  border-radius: 99px; background: var(--teal);
+  transition: width 0.6s var(--ease-out);
+}
+.strip-fill.done { background: var(--teal); }
+.strip-fill.partial { background: var(--gold); }
+.strip-fill.empty { background: transparent; }
+
+/* Mobile menu */
+.mobile-menu-btn { display: none; }
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 99px; }
+::-webkit-scrollbar-thumb:hover { background: var(--teal); }
+
+/* Tooltip-like preview on hover */
+.metric-card .metric-value { position: relative; }
+
+/* Loading skeleton shimmer for empty states */
+.empty-state {
+  text-align: center; padding: 32px 20px;
+  color: var(--muted-2); font-size: 14px;
+}
+.empty-state svg { margin-bottom: 10px; opacity: 0.3; }
+
+/* ─── RESPONSIVE ─────────────────────────────── */
+@media (max-width: 1100px) {
+  #loginScreen { grid-template-columns: 1fr; }
+  .login-hero { min-height: 50vh; padding: 40px; }
+  .hero-copy h1 { font-size: 64px; }
+  .login-panel { padding: 40px 36px; }
+  #appShell { grid-template-columns: 1fr; }
+  .sidebar {
+    position: fixed; z-index: 50;
+    left: 16px; right: 16px; top: 16px;
+    height: auto; max-height: calc(100vh - 32px);
+    overflow-y: auto;
+    transform: translateY(-110%);
+    transition: transform 0.3s var(--ease-out);
+  }
+  .sidebar.open { transform: translateY(0); }
+  .mobile-menu-btn { display: block; }
+  .cols-4, .cols-3 { grid-template-columns: repeat(2, minmax(0,1fr)); }
+  .check-grid { grid-template-columns: repeat(2, minmax(0,1fr)); }
+}
+@media (max-width: 680px) {
+  #appShell { padding: 12px; }
+  .hero-banner { padding: 24px; }
+  .page-title { font-size: 30px; }
+  .cols-4, .cols-3, .cols-2, .form-grid, .check-grid { grid-template-columns: 1fr; }
+  .topbar { flex-direction: column; align-items: flex-start; gap: 10px; }
+  .login-hero { padding: 28px; }
+  .feature-pills { display: none; }
+}
+
+@media (max-width: 480px) {
+  body { font-size: 14px; }
+  #loginScreen { min-height: 100vh; }
+  .login-hero { min-height: 42vh; padding: 24px 20px; }
+  .hero-copy { padding: 42px 0 24px; }
+  .hero-copy h1 { font-size: 52px; }
+  .login-panel { padding: 28px 20px; }
+  .login-panel h2 { font-size: 38px; }
+  .hero-banner h2 { font-size: 34px; }
+  .hero-banner::after { width: 260px; height: 260px; right: -120px; top: -120px; }
+  .card { padding: 18px; border-radius: 22px; }
+  .metric-value { font-size: 34px; }
+  .score-number { font-size: 74px; }
+  .list-item { grid-template-columns: 1fr; }
+  .list-item .btn-danger { width: 100%; }
+  .actions button { width: 100% !important; }
+  .date-pill { width: 100%; justify-content: center; }
+  .sidebar { left: 10px; right: 10px; top: 10px; max-height: calc(100vh - 20px); }
+}
+</style>
+</head>
+<body>
+
+<div class="bg-canvas">
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+  <div class="noise-overlay"></div>
+</div>
+
+<!-- ─── LOGIN ─────────────────────────────────── -->
+<section id="loginScreen">
+  <div class="login-hero">
+    <div class="logo-pill">
+      <div class="logo-icon">C</div>
+      <span>CorePilot OS</span>
+    </div>
+
+    <div class="hero-copy">
+      <div class="hero-eyebrow">Private Command System · v1.0</div>
+      <h1>Pilot your<br><em>discipline.</em></h1>
+      <p style="margin-bottom:36px;">A local-first command center for morning priming, daily discipline, learning, career execution, and weekly review. Your data stays in your browser.</p>
+      <div class="feature-pills">
+        <div class="fp"><div class="fp-dot"></div>Morning Prime</div>
+        <div class="fp"><div class="fp-dot gold"></div>Daily Protocol</div>
+        <div class="fp"><div class="fp-dot teal2"></div>Learning Tracker</div>
+        <div class="fp"><div class="fp-dot ink"></div>Career Command</div>
+        <div class="fp"><div class="fp-dot muted"></div>Weekly Review</div>
+      </div>
+    </div>
+
+    <div style="font-size:12px;color:var(--muted-2);animation:fadeIn 0.5s ease 0.6s both;">Local-first · No cloud · No tracking</div>
+  </div>
+
+  <div class="login-panel">
+    <h2>Enter</h2>
+    <p>Default access: ID <strong>Good For Me</strong>, password <strong>simplelife</strong>. Change inside code.</p>
+    <form id="loginForm">
+      <div class="field-wrap">
+        <label>Private ID</label>
+        <input id="userId" autocomplete="username" placeholder="Enter private ID" />
+      </div>
+      <div class="field-wrap">
+        <label>Password</label>
+        <input id="password" type="password" autocomplete="current-password" placeholder="Enter password" />
+      </div>
+      <button class="btn-primary" type="submit">Enter CorePilot →</button>
+      <div id="loginError" class="error-msg"></div>
+    </form>
+  </div>
+</section>
+
+<!-- ─── APP SHELL ──────────────────────────────── -->
+<section id="appShell" class="hidden">
+  <aside id="sidebar" class="sidebar">
+    <div class="brand">
+      <div class="logo-icon">C</div>
+      <div class="brand-text">
+        <h2>CorePilot</h2>
+        <p>Command System</p>
+      </div>
+    </div>
+    <nav class="nav" id="nav">
+      <button class="nav-btn active" data-section="dashboard"><span class="nav-icon">▣</span> Dashboard</button>
+      <button class="nav-btn" data-section="morning"><span class="nav-icon">☀</span> Morning Prime</button>
+      <button class="nav-btn" data-section="protocol"><span class="nav-icon">✓</span> Daily Protocol</button>
+      <button class="nav-btn" data-section="journal"><span class="nav-icon">✎</span> Journal</button>
+      <button class="nav-btn" data-section="learning"><span class="nav-icon">◇</span> Learning</button>
+      <button class="nav-btn" data-section="career"><span class="nav-icon">▤</span> Career Command</button>
+      <button class="nav-btn" data-section="weekly"><span class="nav-icon">↗</span> Weekly Review</button>
+      <button class="nav-btn" data-section="settings"><span class="nav-icon">⚙</span> Settings</button>
+    </nav>
+    <div class="sidebar-footer">
+      <button id="logoutBtn" class="btn-ghost" style="width:100%;">Logout</button>
+    </div>
+  </aside>
+
+  <main class="main-content">
+    <div class="topbar">
+      <div class="topbar-left">
+        <button id="mobileMenuBtn" class="btn-secondary mobile-menu-btn">Menu</button>
+        <h1 class="page-title" id="sectionTitle">Dashboard</h1>
+      </div>
+      <div class="date-pill">
+        <div class="date-dot"></div>
+        <span id="todayDate"></span>
+      </div>
+    </div>
+
+    <!-- DASHBOARD -->
+    <section id="dashboard" class="section active">
+      <div class="hero-banner anim-fadeUp">
+        <h2>Today's Command Center</h2>
+        <p>Start with identity, execute the day, and review your growth through evidence — not emotion.</p>
+      </div>
+      <div class="progress-strip" id="dayProgress">
+        <div class="strip-item"><div class="strip-fill" id="ps-morning" style="width:0%"></div></div>
+        <div class="strip-item"><div class="strip-fill" id="ps-protocol" style="width:0%"></div></div>
+        <div class="strip-item"><div class="strip-fill" id="ps-learning" style="width:0%"></div></div>
+        <div class="strip-item"><div class="strip-fill" id="ps-career" style="width:0%"></div></div>
+        <div class="strip-item"><div class="strip-fill" id="ps-journal" style="width:0%"></div></div>
+      </div>
+      <div class="grid cols-4">
+        <div class="card metric-card anim-fadeUp d1">
+          <div class="metric-label">Discipline Score</div>
+          <div class="metric-value" id="dashScore">0/100</div>
+          <div class="metric-note">Based on today's protocol.</div>
+        </div>
+        <div class="card metric-card anim-fadeUp d2">
+          <div class="metric-label">Morning Prime</div>
+          <div class="metric-value" id="dashMorning">No</div>
+          <div class="metric-note">Identity activation.</div>
+        </div>
+        <div class="card metric-card anim-fadeUp d3">
+          <div class="metric-label">Learning Hours</div>
+          <div class="metric-value" id="dashLearning">0h</div>
+          <div class="metric-note">Today's skill work.</div>
+        </div>
+        <div class="card metric-card anim-fadeUp d4">
+          <div class="metric-label">Career Tasks</div>
+          <div class="metric-value" id="dashCareer">0</div>
+          <div class="metric-note">Completed today.</div>
+        </div>
+      </div>
+      <div class="grid cols-2" style="margin-top:16px;">
+        <div class="card anim-fadeUp d5">
+          <h3>Non-Negotiable</h3>
+          <p id="dashNonNegotiable" style="color:var(--muted);font-size:14px;line-height:1.65;">Not set yet. Add it in Morning Prime.</p>
+        </div>
+        <div class="card anim-fadeUp d6">
+          <h3>Weak Area Alert</h3>
+          <p id="dashWeakArea" style="color:var(--muted);font-size:14px;line-height:1.65;">Complete Daily Protocol to identify the weak area.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- MORNING PRIME -->
+    <section id="morning" class="section">
+      <div class="hero-banner">
+        <h2>Morning Prime</h2>
+        <p>Save reusable affirmation techniques, pre-written affirmation page links, and music links. Then select one method every morning and mark the start protocol complete.</p>
+      </div>
+
+      <div class="grid cols-2">
+        <div class="card anim-fadeUp d1">
+          <h3>Today’s Start Protocol</h3>
+          <form id="morningForm" class="form-grid">
+            <div class="field-wrap full">
+              <label>Selected Method / Technique</label>
+              <select name="selectedMethod" id="selectedMethod">
+                <option value="">Choose a saved method</option>
+              </select>
+            </div>
+            <div class="field-wrap full">
+              <label>Identity Line</label>
+              <input name="identityLine" placeholder="I operate with calm discipline and sharp execution." />
+            </div>
+            <div class="field-wrap">
+              <label>Mood Before (1-10)</label>
+              <input name="moodBefore" type="number" min="1" max="10" placeholder="7" />
+            </div>
+            <div class="field-wrap">
+              <label>Duration Completed</label>
+              <input name="durationCompleted" placeholder="10 minutes" />
+            </div>
+            <div class="field-wrap">
+              <label>Today's Intention</label>
+              <textarea name="intention" placeholder="Today I will operate from calm focus..."></textarea>
+            </div>
+            <div class="field-wrap">
+              <label>Today's Non-Negotiable</label>
+              <textarea name="nonNegotiable" placeholder="Complete 90 min of Python practice."></textarea>
+            </div>
+            <div class="actions full">
+              <button class="btn-primary" type="submit" style="width:auto;padding:12px 28px;">Mark Morning Prime Complete</button>
+              <button class="btn-secondary" type="button" data-clear="morningForm">Clear</button>
+            </div>
+          </form>
+        </div>
+
+        <div class="card anim-fadeUp d2">
+          <h3>Add Affirmation Method</h3>
+          <form id="methodForm" class="form-grid">
+            <div class="field-wrap full">
+              <label>Method Name</label>
+              <input name="name" placeholder="Masculine Discipline Morning Method" />
+            </div>
+            <div class="field-wrap">
+              <label>Method Type</label>
+              <select name="type">
+                <option>Affirmation Reading</option>
+                <option>Affirmation Music</option>
+                <option>Breathing + Affirmation</option>
+                <option>Visualization</option>
+                <option>Power Posture + Audio</option>
+                <option>Custom</option>
+              </select>
+            </div>
+            <div class="field-wrap">
+              <label>Suggested Duration</label>
+              <input name="duration" placeholder="5–10 minutes" />
+            </div>
+            <div class="field-wrap full">
+              <label>Pre-written Affirmation Page / Site Link</label>
+              <input name="affirmationLink" placeholder="Paste Google Doc / Notion / webpage link" />
+            </div>
+            <div class="field-wrap full">
+              <label>Music / Audio Link</label>
+              <input name="musicLink" placeholder="Paste Musicfly AI / Drive / YouTube / audio link" />
+            </div>
+            <div class="field-wrap full">
+              <label>Method Instructions</label>
+              <textarea name="instructions" placeholder="Example: Open the affirmation page, play the music, stand straight, breathe deeply, read slowly, visualize the day, then set one non-negotiable task."></textarea>
+            </div>
+            <div class="actions full">
+              <button class="btn-primary" type="submit" style="width:auto;padding:12px 28px;">Save Method</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <div class="card anim-fadeUp d3" style="margin-top:16px;">
+        <h3>Saved Morning Methods</h3>
+        <div id="methodList" class="list"></div>
+      </div>
+    </section>
+
+    <!-- PROTOCOL -->
+    <section id="protocol" class="section">
+      <div class="hero-banner">
+        <h2>Daily Protocol</h2>
+        <p>Score the day with action-based evidence. Keep your growth measurable.</p>
+      </div>
+      <div class="grid cols-2">
+        <div class="card">
+          <h3>Today's Checklist</h3>
+          <form id="protocolForm">
+            <div class="check-grid">
+              <label class="check-tile">
+                <input type="checkbox" name="morningPrime">
+                <div><strong>Morning Prime</strong><span>Identity done.</span></div>
+              </label>
+              <label class="check-tile">
+                <input type="checkbox" name="gym">
+                <div><strong>Gym</strong><span>Training completed.</span></div>
+              </label>
+              <label class="check-tile">
+                <input type="checkbox" name="learning">
+                <div><strong>Learning</strong><span>Skill block done.</span></div>
+              </label>
+              <label class="check-tile">
+                <input type="checkbox" name="workExecution">
+                <div><strong>Work</strong><span>Key task completed.</span></div>
+              </label>
+              <label class="check-tile">
+                <input type="checkbox" name="noDistraction">
+                <div><strong>Focus</strong><span>No major leakage.</span></div>
+              </label>
+              <label class="check-tile">
+                <input type="checkbox" name="grooming">
+                <div><strong>Grooming</strong><span>Presentation up.</span></div>
+              </label>
+              <label class="check-tile">
+                <input type="checkbox" name="journal">
+                <div><strong>Journal</strong><span>Reflection done.</span></div>
+              </label>
+              <label class="check-tile">
+                <input type="checkbox" name="sleepDiscipline">
+                <div><strong>Sleep</strong><span>Discipline held.</span></div>
+              </label>
+            </div>
+            <div class="actions">
+              <button class="btn-primary" type="submit" style="width:auto;padding:12px 28px;">Save Protocol</button>
+              <button class="btn-secondary" type="button" id="previewScoreBtn">Preview Score</button>
+            </div>
+          </form>
+        </div>
+        <div class="score-panel">
+          <div class="score-label">Today's Score</div>
+          <div class="score-number" id="scorePreview">0</div>
+          <div class="score-bar-wrap">
+            <div class="score-bar-track"><div class="score-bar-fill" id="scoreBarFill" style="width:0%"></div></div>
+          </div>
+          <div class="score-note" style="margin-top:16px;">Morning Prime 10 · Gym 20 · Learning 15 · Work 20 · Focus 10 · Grooming 10 · Journal 10 · Sleep 5</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- JOURNAL -->
+    <section id="journal" class="section">
+      <div class="hero-banner">
+        <h2>Evening Journal</h2>
+        <p>Close the loop before sleep. Capture wins, weakness, lessons, correction, and direction.</p>
+      </div>
+      <div class="card">
+        <h3>Reflection Entry</h3>
+        <form id="journalForm" class="form-grid">
+          <div class="field-wrap"><label>Today's Win</label><textarea name="win"></textarea></div>
+          <div class="field-wrap"><label>Where I lost control</label><textarea name="weakness"></textarea></div>
+          <div class="field-wrap"><label>What I learned</label><textarea name="lesson"></textarea></div>
+          <div class="field-wrap"><label>Correction for tomorrow</label><textarea name="correction"></textarea></div>
+          <div class="field-wrap"><label>Emotional Control (1-10)</label><input name="emotionalControl" type="number" min="1" max="10" /></div>
+          <div class="field-wrap"><label>Focus Level (1-10)</label><input name="focusLevel" type="number" min="1" max="10" /></div>
+          <div class="field-wrap full"><label>Tomorrow's Non-Negotiable</label><input name="tomorrowTask" /></div>
+          <div class="actions full">
+            <button class="btn-primary" type="submit" style="width:auto;padding:12px 28px;">Save Journal</button>
+            <button class="btn-secondary" type="button" data-clear="journalForm">Clear</button>
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <!-- LEARNING -->
+    <section id="learning" class="section">
+      <div class="hero-banner">
+        <h2>Learning Tracker</h2>
+        <p>Track deliberate practice across Python, Excel, Power BI, AI, branding, and strategic skills.</p>
+      </div>
+      <div class="card">
+        <h3>Add Learning Block</h3>
+        <form id="learningForm" class="form-grid">
+          <div class="field-wrap"><label>Skill</label><input name="skill" placeholder="Python / Excel / Branding" /></div>
+          <div class="field-wrap"><label>Hours</label><input name="hours" type="number" min="0" step="0.25" placeholder="1.5" /></div>
+          <div class="field-wrap"><label>Topic</label><input name="topic" placeholder="While loop / COUNTIFS / Brand positioning" /></div>
+          <div class="field-wrap"><label>Practice Done?</label>
+            <select name="practice">
+              <option>Yes</option><option>No</option><option>Partial</option>
+            </select>
+          </div>
+          <div class="field-wrap full"><label>Notes</label><textarea name="notes"></textarea></div>
+          <div class="actions full">
+            <button class="btn-primary" type="submit" style="width:auto;padding:12px 28px;">Save Learning</button>
+          </div>
+        </form>
+      </div>
+      <div class="card" style="margin-top:16px;">
+        <h3>Recent Learning</h3>
+        <div id="learningList" class="list"></div>
+      </div>
+    </section>
+
+    <!-- CAREER -->
+    <section id="career" class="section">
+      <div class="hero-banner">
+        <h2>Career Command</h2>
+        <p>Convert office work into a structured career execution database with outputs, priority, and evidence.</p>
+      </div>
+      <div class="card">
+        <h3>Add Career Task</h3>
+        <form id="careerForm" class="form-grid">
+          <div class="field-wrap"><label>Work Area</label>
+            <select name="workArea">
+              <option>SHE MART</option><option>Food Product Pilot</option><option>SARAS / IFC</option>
+              <option>Dashboard / MIS</option><option>MOM / Documentation</option>
+              <option>Learning / Portfolio</option><option>Other</option>
+            </select>
+          </div>
+          <div class="field-wrap"><label>Output Type</label>
+            <select name="outputType">
+              <option>Strategy Note</option><option>SOP</option><option>MOM</option>
+              <option>Dashboard</option><option>Spreadsheet</option><option>Guideline</option>
+              <option>Presentation</option><option>Other</option>
+            </select>
+          </div>
+          <div class="field-wrap full"><label>Task</label><input name="task" placeholder="Draft institutional architecture for SHE MART" /></div>
+          <div class="field-wrap"><label>Priority</label>
+            <select name="priority"><option>High</option><option>Medium</option><option>Low</option></select>
+          </div>
+          <div class="field-wrap"><label>Status</label>
+            <select name="status"><option>Pending</option><option>In Progress</option><option>Completed</option></select>
+          </div>
+          <div class="field-wrap"><label>Impact</label>
+            <select name="impact"><option>High</option><option>Medium</option><option>Low</option></select>
+          </div>
+          <div class="field-wrap"><label>Evidence / Link</label><input name="evidence" placeholder="File link / note / reference" /></div>
+          <div class="field-wrap full"><label>Next Action</label><textarea name="nextAction"></textarea></div>
+          <div class="actions full">
+            <button class="btn-primary" type="submit" style="width:auto;padding:12px 28px;">Save Career Task</button>
+          </div>
+        </form>
+      </div>
+      <div class="card" style="margin-top:16px;">
+        <h3>Career Tasks</h3>
+        <div id="careerList" class="list"></div>
+      </div>
+    </section>
+
+    <!-- WEEKLY -->
+    <section id="weekly" class="section">
+      <div class="hero-banner">
+        <h2>Weekly Review</h2>
+        <p>Review the last 7 days and generate a copy-paste AI performance analysis prompt.</p>
+      </div>
+      <div class="grid cols-4">
+        <div class="card metric-card anim-fadeUp d1"><div class="metric-label">Avg Score</div><div id="weekAvg" class="metric-value">0</div><div class="metric-note">Last 7 days</div></div>
+        <div class="card metric-card anim-fadeUp d2"><div class="metric-label">Gym Days</div><div id="weekGym" class="metric-value">0</div><div class="metric-note">Sessions done</div></div>
+        <div class="card metric-card anim-fadeUp d3"><div class="metric-label">Learning Hours</div><div id="weekLearning" class="metric-value">0h</div><div class="metric-note">Recorded practice</div></div>
+        <div class="card metric-card anim-fadeUp d4"><div class="metric-label">Career Done</div><div id="weekCareer" class="metric-value">0</div><div class="metric-note">Completed tasks</div></div>
+      </div>
+      <div class="card" style="margin-top:16px;">
+        <h3>AI Weekly Review Prompt</h3>
+        <textarea id="aiPrompt" readonly></textarea>
+        <div class="actions">
+          <button class="btn-primary" id="generatePromptBtn" style="width:auto;padding:12px 28px;">Generate Prompt</button>
+          <button class="btn-secondary" id="copyPromptBtn">Copy to Clipboard</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- SETTINGS -->
+    <section id="settings" class="section">
+      <div class="hero-banner">
+        <h2>Settings & Backup</h2>
+        <p>Export, import, or reset your local CorePilot OS data. Your data stays inside this browser.</p>
+      </div>
+      <div class="grid cols-3">
+        <div class="card">
+          <h3>Export Backup</h3>
+          <p style="color:var(--muted);font-size:14px;margin-bottom:16px;">Download all data as JSON.</p>
+          <button id="exportBtn" class="btn-primary" style="width:auto;padding:11px 22px;">Export Data</button>
+        </div>
+        <div class="card">
+          <h3>Import Backup</h3>
+          <p style="color:var(--muted);font-size:14px;margin-bottom:12px;">Restore from a JSON backup.</p>
+          <div class="field-wrap"><input id="importFile" type="file" accept="application/json" /></div>
+          <button id="importBtn" class="btn-secondary">Import Data</button>
+        </div>
+        <div class="card">
+          <h3>Reset App</h3>
+          <p style="color:var(--muted);font-size:14px;margin-bottom:16px;">Delete all local entries from this browser.</p>
+          <button id="resetBtn" class="btn-danger">Reset All Data</button>
+        </div>
+      </div>
+    </section>
+  </main>
+</section>
+
+<script>
+const STORAGE_KEY = "corepilotOSDataV2";
+const SESSION_KEY = "corepilotOSLoggedIn";
+const CREDS = { id: "aniket", password: "corepilot" };
+
+const todayISO = () => new Date().toISOString().slice(0, 10);
+const uid = () => `${Date.now()}-${Math.random().toString(16).slice(2)}`;
+const emptyData = () => ({ morningPrime: [], morningMethods: [], dailyProtocol: [], journal: [], learning: [], careerTasks: [] });
+
+let data = loadData();
+
+function loadData() {
+  try {
+    const s = localStorage.getItem(STORAGE_KEY);
+    return s ? { ...emptyData(), ...JSON.parse(s) } : emptyData();
+  } catch { return emptyData(); }
+}
+function saveData() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  renderAll();
+}
+function upsertByDate(col, entry) {
+  const i = data[col].findIndex(x => x.date === entry.date);
+  if (i >= 0) data[col][i] = { ...data[col][i], ...entry };
+  else data[col].push(entry);
+}
+function getTodayEntry(col) { return data[col].find(x => x.date === todayISO()); }
+function getLast7Dates() {
+  return Array.from({ length: 7 }, (_, i) => {
+    const d = new Date(); d.setDate(d.getDate() - i);
+    return d.toISOString().slice(0, 10);
+  });
+}
+const weights = { morningPrime: 10, gym: 20, learning: 15, workExecution: 20, noDistraction: 10, grooming: 10, journal: 10, sleepDiscipline: 5 };
+function calculateScore(vals) {
+  return Object.entries(weights).reduce((s, [k, v]) => s + (vals[k] ? v : 0), 0);
+}
+function formToObject(form) {
+  const o = {}; new FormData(form).forEach((v, k) => o[k] = v); return o;
+}
+function checkboxValues(form) {
+  return Object.fromEntries(Object.keys(weights).map(k => [k, form[k]?.checked || false]));
+}
+function escapeHTML(v) {
+  return String(v || "").replace(/[&<>'"]/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;","'":"&#039;",'"':"&quot;" }[c]));
+}
+
+function animateValue(el, target, suffix = '') {
+  const start = parseInt(el.textContent) || 0;
+  const duration = 600;
+  const startTime = performance.now();
+  const update = (now) => {
+    const t = Math.min((now - startTime) / duration, 1);
+    const ease = 1 - Math.pow(1 - t, 3);
+    el.textContent = Math.round(start + (target - start) * ease) + suffix;
+    if (t < 1) requestAnimationFrame(update);
+  };
+  requestAnimationFrame(update);
+}
+
+function setSection(id) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.toggle('active', b.dataset.section === id));
+  const btn = document.querySelector(`.nav-btn[data-section="${id}"]`);
+  document.getElementById('sectionTitle').textContent = btn ? btn.textContent.replace(/[▣☀✓✎◇▤↗⚙]/g, '').trim() : 'Dashboard';
+  document.getElementById('sidebar').classList.remove('open');
+  renderAll();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function renderAll() { renderDashboard(); renderMethods(); renderLists(); renderWeekly(); }
+
+function renderMethods() {
+  const select = document.getElementById('selectedMethod');
+  const list = document.getElementById('methodList');
+  if (!select || !list) return;
+
+  select.innerHTML = `<option value="">Choose a saved method</option>` + data.morningMethods.map(method => `
+    <option value="${method.id}">${escapeHTML(method.name || 'Morning Method')}</option>
+  `).join('');
+
+  list.innerHTML = data.morningMethods.slice().reverse().map((method, i) => `
+    <div class="list-item" style="animation-delay:${i * 0.05}s">
+      <div>
+        <h4>${escapeHTML(method.name || 'Morning Method')}</h4>
+        <p>${escapeHTML(method.instructions || 'No instructions added')}</p>
+        <div class="badge-row">
+          <span class="badge dark">${escapeHTML(method.type || 'Custom')}</span>
+          <span class="badge">${escapeHTML(method.duration || 'Duration not set')}</span>
+          ${method.affirmationLink ? `<a class="badge gold" target="_blank" rel="noopener" href="${escapeHTML(method.affirmationLink)}">Open Affirmation</a>` : ''}
+          ${method.musicLink ? `<a class="badge" target="_blank" rel="noopener" href="${escapeHTML(method.musicLink)}">Open Music</a>` : ''}
+        </div>
+      </div>
+      <button class="btn-danger" onclick="deleteItem('morningMethods','${method.id}')">Delete</button>
+    </div>
+  `).join('') || `<div class="empty-state"><p>No morning methods saved yet. Add your affirmation site and music links here.</p></div>`;
+}
+
+function renderDashboard() {
+  const proto = getTodayEntry('dailyProtocol');
+  const morning = getTodayEntry('morningPrime');
+  const lh = data.learning.filter(x => x.date === todayISO()).reduce((s, x) => s + Number(x.hours || 0), 0);
+  const cc = data.careerTasks.filter(x => x.date === todayISO() && x.status === 'Completed').length;
+  const score = proto?.score || 0;
+
+  document.getElementById('dashScore').textContent = `${score}/100`;
+  document.getElementById('dashMorning').textContent = morning ? 'Done' : 'No';
+  document.getElementById('dashLearning').textContent = `${lh}h`;
+  document.getElementById('dashCareer').textContent = cc;
+  document.getElementById('dashNonNegotiable').textContent = morning?.nonNegotiable || 'Not set yet. Add it in Morning Prime.';
+
+  // Progress strip
+  document.getElementById('ps-morning').style.width = morning ? '100%' : '0%';
+  document.getElementById('ps-protocol').style.width = proto ? '100%' : '0%';
+  document.getElementById('ps-learning').style.width = lh > 0 ? Math.min(100, lh * 50) + '%' : '0%';
+  document.getElementById('ps-career').style.width = cc > 0 ? Math.min(100, cc * 25) + '%' : '0%';
+  document.getElementById('ps-journal').style.width = getTodayEntry('journal') ? '100%' : '0%';
+
+  const weak = [];
+  if (proto) {
+    if (!proto.gym) weak.push('Gym');
+    if (!proto.learning) weak.push('Learning');
+    if (!proto.workExecution) weak.push('Work Execution');
+    if (!proto.noDistraction) weak.push('Distraction Control');
+    if (!proto.sleepDiscipline) weak.push('Sleep Discipline');
+  }
+  document.getElementById('dashWeakArea').textContent = proto
+    ? (weak[0] || 'No major weak area today. Maintain the system.')
+    : 'Complete Daily Protocol to identify the weak area.';
+}
+
+function renderLists() {
+  const ll = document.getElementById('learningList');
+  ll.innerHTML = data.learning.slice().reverse().slice(0, 8).map((x, i) => `
+    <div class="list-item" style="animation-delay:${i * 0.05}s">
+      <div>
+        <h4>${escapeHTML(x.skill || 'Learning Block')}</h4>
+        <p>${escapeHTML(x.topic || 'No topic added')}</p>
+        <div class="badge-row">
+          <span class="badge">${escapeHTML(x.date)}</span>
+          <span class="badge dark">${escapeHTML(x.hours || 0)}h</span>
+          <span class="badge gold">${escapeHTML(x.practice || '')}</span>
+        </div>
+      </div>
+      <button class="btn-danger" onclick="deleteItem('learning','${x.id}')">Delete</button>
+    </div>`).join('') || `<div class="empty-state"><p>No learning entries yet.</p></div>`;
+
+  const cl = document.getElementById('careerList');
+  cl.innerHTML = data.careerTasks.slice().reverse().slice(0, 10).map((x, i) => {
+    const statusClass = x.status === 'Completed' ? 'status-done' : x.status === 'In Progress' ? 'status-wip' : '';
+    return `
+    <div class="list-item" style="animation-delay:${i * 0.05}s">
+      <div>
+        <h4>${escapeHTML(x.task || 'Career Task')}</h4>
+        <p>${escapeHTML(x.nextAction || 'No next action added')}</p>
+        <div class="badge-row">
+          <span class="badge">${escapeHTML(x.workArea)}</span>
+          <span class="badge ${statusClass}">${escapeHTML(x.status)}</span>
+          <span class="badge gold">${escapeHTML(x.priority)}</span>
+          <span class="badge">${escapeHTML(x.outputType)}</span>
+        </div>
+      </div>
+      <button class="btn-danger" onclick="deleteItem('careerTasks','${x.id}')">Delete</button>
+    </div>`;
+  }).join('') || `<div class="empty-state"><p>No career tasks yet.</p></div>`;
+}
+
+function renderWeekly() {
+  const dates = getLast7Dates();
+  const protos = data.dailyProtocol.filter(x => dates.includes(x.date));
+  const avg = protos.length ? Math.round(protos.reduce((s, x) => s + Number(x.score || 0), 0) / protos.length) : 0;
+  const gym = protos.filter(x => x.gym).length;
+  const lh = data.learning.filter(x => dates.includes(x.date)).reduce((s, x) => s + Number(x.hours || 0), 0);
+  const cc = data.careerTasks.filter(x => dates.includes(x.date) && x.status === 'Completed').length;
+  document.getElementById('weekAvg').textContent = avg;
+  document.getElementById('weekGym').textContent = gym;
+  document.getElementById('weekLearning').textContent = `${lh}h`;
+  document.getElementById('weekCareer').textContent = cc;
+}
+
+function generateAIPrompt() {
+  const dates = getLast7Dates();
+  const protos = data.dailyProtocol.filter(x => dates.includes(x.date));
+  const le = data.learning.filter(x => dates.includes(x.date));
+  const ce = data.careerTasks.filter(x => dates.includes(x.date));
+  const je = data.journal.filter(x => dates.includes(x.date));
+  const avg = protos.length ? Math.round(protos.reduce((s, x) => s + Number(x.score || 0), 0) / protos.length) : 0;
+  const lh = le.reduce((s, x) => s + Number(x.hours || 0), 0);
+  const cc = ce.filter(x => x.status === 'Completed').length;
+
+  const lineBreak = String.fromCharCode(10);
+
+  const learningText = le.length
+    ? le.map(x => `- ${x.skill || 'Skill'}: ${x.topic || 'No topic'} (${x.hours || 0}h)`).join(lineBreak)
+    : 'No learning entries';
+
+  const careerText = ce.length
+    ? ce.map(x => `- ${x.workArea || 'Work Area'}: ${x.task || 'No task'} | Status: ${x.status || 'Pending'} | Priority: ${x.priority || 'Medium'}`).join(lineBreak)
+    : 'No career tasks';
+
+  const journalText = je.length
+    ? je.map(x => `- Win: ${x.win || ''} | Weakness: ${x.weakness || ''} | Correction: ${x.correction || ''}`).join(lineBreak)
+    : 'No journal entries';
+
+  document.getElementById('aiPrompt').value = `Analyze my CorePilot OS weekly performance like a strict but practical performance coach.
+
+Weekly Data:
+- Average Discipline Score: ${avg}/100
+- Gym Days: ${protos.filter(x => x.gym).length}
+- Learning Hours: ${lh}
+- Career Tasks Completed: ${cc}
+- Journal Entries: ${je.length}
+
+Recent Learning Topics:
+${learningText}
+
+Career Tasks:
+${careerText}
+
+Journal Signals:
+${journalText}
+
+Give me:
+1. Pattern analysis
+2. Strongest area
+3. Weakest area
+4. One behavior to eliminate next week
+5. One system correction
+6. Next week's execution protocol
+7. One identity-level affirmation`;
+}
+
+window.deleteItem = (col, id) => {
+  data[col] = data[col].filter(x => x.id !== id);
+  saveData();
+};
+
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('todayDate').textContent = new Date().toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+
+  if (sessionStorage.getItem(SESSION_KEY) === 'true') {
+    document.getElementById('loginScreen').classList.add('hidden');
+    document.getElementById('appShell').classList.remove('hidden');
+    renderAll();
+  }
+
+  // Login
+  document.getElementById('loginForm').addEventListener('submit', e => {
+    e.preventDefault();
+    const id = document.getElementById('userId').value.trim();
+    const pw = document.getElementById('password').value.trim();
+    if (id === CREDS.id && pw === CREDS.password) {
+      sessionStorage.setItem(SESSION_KEY, 'true');
+      document.getElementById('loginScreen').classList.add('hidden');
+      document.getElementById('appShell').classList.remove('hidden');
+      renderAll();
+    } else {
+      const err = document.getElementById('loginError');
+      err.textContent = 'Incorrect ID or password.';
+      err.style.animation = 'none';
+      requestAnimationFrame(() => { err.style.animation = 'fadeUp 0.3s ease both'; });
+    }
+  });
+
+  document.getElementById('logoutBtn').addEventListener('click', () => { sessionStorage.removeItem(SESSION_KEY); location.reload(); });
+  document.getElementById('mobileMenuBtn').addEventListener('click', () => document.getElementById('sidebar').classList.toggle('open'));
+
+  document.getElementById('nav').addEventListener('click', e => {
+    const btn = e.target.closest('button[data-section]');
+    if (btn) setSection(btn.dataset.section);
+  });
+
+  document.querySelectorAll('[data-clear]').forEach(btn =>
+    btn.addEventListener('click', () => document.getElementById(btn.dataset.clear).reset()));
+
+  // Score preview with animation
+  const updateScorePreview = () => {
+    const vals = checkboxValues(document.getElementById('protocolForm'));
+    const score = calculateScore(vals);
+    document.getElementById('scorePreview').textContent = score;
+    document.getElementById('scoreBarFill').style.width = score + '%';
+  };
+
+  document.getElementById('protocolForm').querySelectorAll('input[type=checkbox]').forEach(cb =>
+    cb.addEventListener('change', updateScorePreview));
+
+  document.getElementById('previewScoreBtn').addEventListener('click', updateScorePreview);
+
+  document.getElementById('morningForm').addEventListener('submit', e => {
+    e.preventDefault();
+    const obj = formToObject(e.target);
+    const selected = data.morningMethods.find(method => method.id === obj.selectedMethod);
+    upsertByDate('morningPrime', {
+      ...obj,
+      methodName: selected?.name || '',
+      methodType: selected?.type || '',
+      id: getTodayEntry('morningPrime')?.id || uid(),
+      date: todayISO(),
+      completed: true
+    });
+    saveData(); setSection('dashboard');
+  });
+
+  document.getElementById('methodForm').addEventListener('submit', e => {
+    e.preventDefault();
+    const obj = formToObject(e.target);
+    data.morningMethods.push({ ...obj, id: uid(), createdAt: todayISO() });
+    e.target.reset();
+    saveData();
+  });
+
+  document.getElementById('protocolForm').addEventListener('submit', e => {
+    e.preventDefault();
+    const vals = checkboxValues(e.target);
+    const score = calculateScore(vals);
+    upsertByDate('dailyProtocol', { ...vals, id: getTodayEntry('dailyProtocol')?.id || uid(), date: todayISO(), score });
+    document.getElementById('scorePreview').textContent = score;
+    document.getElementById('scoreBarFill').style.width = score + '%';
+    saveData(); setSection('dashboard');
+  });
+
+  document.getElementById('journalForm').addEventListener('submit', e => {
+    e.preventDefault();
+    const obj = formToObject(e.target);
+    upsertByDate('journal', { ...obj, id: getTodayEntry('journal')?.id || uid(), date: todayISO() });
+    saveData();
+  });
+
+  document.getElementById('learningForm').addEventListener('submit', e => {
+    e.preventDefault();
+    data.learning.push({ ...formToObject(e.target), id: uid(), date: todayISO() });
+    e.target.reset(); saveData();
+  });
+
+  document.getElementById('careerForm').addEventListener('submit', e => {
+    e.preventDefault();
+    data.careerTasks.push({ ...formToObject(e.target), id: uid(), date: todayISO() });
+    e.target.reset(); saveData();
+  });
+
+  document.getElementById('generatePromptBtn').addEventListener('click', generateAIPrompt);
+  document.getElementById('copyPromptBtn').addEventListener('click', async () => {
+    await navigator.clipboard.writeText(document.getElementById('aiPrompt').value);
+    const btn = document.getElementById('copyPromptBtn');
+    btn.textContent = 'Copied';
+    setTimeout(() => btn.textContent = 'Copy to Clipboard', 1200);
+  });
+
+  document.getElementById('exportBtn').addEventListener('click', () => {
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `corepilot-os-backup-${todayISO()}.json`;
+    a.click();
+  });
+
+  document.getElementById('importBtn').addEventListener('click', () => {
+    const file = document.getElementById('importFile').files[0];
+    if (!file) return alert('Choose a JSON backup file first.');
+    const r = new FileReader();
+    r.onload = () => {
+      try { data = { ...emptyData(), ...JSON.parse(r.result) }; saveData(); alert('Backup imported.'); }
+      catch { alert('Invalid backup file.'); }
+    };
+    r.readAsText(file);
+  });
+
+  document.getElementById('resetBtn').addEventListener('click', () => {
+    if (confirm('Delete all CorePilot OS local data from this browser?')) {
+      data = emptyData(); saveData(); alert('Data reset completed.');
+    }
+  });
+
+  renderAll();
+
+  // Stagger card animations on section switch
+  const observer = new MutationObserver(muts => {
+    muts.forEach(m => {
+      if (m.target.classList.contains('active')) {
+        const cards = m.target.querySelectorAll('.card, .metric-card, .hero-banner, .score-panel');
+        cards.forEach((c, i) => {
+          c.style.opacity = '0';
+          c.style.transform = 'translateY(16px)';
+          requestAnimationFrame(() => {
+            setTimeout(() => {
+              c.style.transition = 'opacity 0.45s ease, transform 0.45s cubic-bezier(0.22,1,0.36,1)';
+              c.style.opacity = '1';
+              c.style.transform = 'translateY(0)';
+            }, i * 55);
+          });
+        });
+      }
+    });
+  });
+  document.querySelectorAll('.section').forEach(s => observer.observe(s, { attributes: true, attributeFilter: ['class'] }));
+});
+</script>
+</body>
+</html>
