@@ -6,1076 +6,839 @@
 <title>CorePilot OS</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,700;1,9..40,300&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Manrope:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 :root {
-  --teal: #0e9b88;
-  --teal-dark: #076b5d;
-  --teal-deep: #04403a;
-  --teal-light: #c5f5ec;
-  --teal-xlight: #eafaf7;
-  --gold: #f5c842;
-  --gold-dark: #c49a0a;
-  --danger: #e05252;
-  --ink: #111a1e;
-  --ink-2: #2c3840;
-  --muted: #6e848d;
-  --muted-2: #9bb3bc;
+  /* Surfaces */
+  --bg: #faf9f7;
   --surface: #ffffff;
-  --surface-2: #f3f8f7;
-  --surface-3: #e8f4f1;
-  --border: rgba(14,155,136,0.14);
-  --border-strong: rgba(14,155,136,0.28);
-  --shadow-sm: 0 2px 8px rgba(4,64,58,0.08);
-  --shadow-md: 0 8px 24px rgba(4,64,58,0.12);
-  --shadow-lg: 0 20px 50px rgba(4,64,58,0.16);
-  --r-sm: 12px;
-  --r-md: 18px;
-  --r-lg: 26px;
-  --r-xl: 36px;
-  --font-display: 'Bebas Neue', sans-serif;
-  --font-body: 'DM Sans', sans-serif;
-  --font-mono: 'DM Mono', monospace;
-  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
-  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --surface-2: #f4f3f0;
+  --surface-3: #ecebe7;
+  --surface-ink: #0a0a0a;
+  --surface-ink-2: #1a1a1a;
+
+  /* Text */
+  --ink: #0a0a0a;
+  --ink-2: #2b2b2b;
+  --ink-3: #525252;
+  --muted: #737373;
+  --muted-2: #a3a3a3;
+  --on-ink: #fafaf9;
+
+  /* Borders */
+  --border: rgba(10,10,10,0.06);
+  --border-md: rgba(10,10,10,0.10);
+  --border-strong: rgba(10,10,10,0.16);
+
+  /* Accent — teal (used sparingly) */
+  --accent: #0e9b88;
+  --accent-dark: #076b5d;
+  --accent-deep: #04403a;
+  --accent-tint: #eaf8f4;
+  --accent-line: rgba(14,155,136,0.20);
+
+  /* Other accents */
+  --gold: #c79a1f;
+  --gold-tint: rgba(199,154,31,0.10);
+  --danger: #b91c1c;
+  --danger-tint: #fce8e8;
+
+  /* Shadows */
+  --shadow-xs: 0 1px 2px rgba(10,10,10,0.04);
+  --shadow-sm: 0 1px 3px rgba(10,10,10,0.05), 0 1px 2px rgba(10,10,10,0.03);
+  --shadow-md: 0 2px 6px rgba(10,10,10,0.04), 0 12px 28px rgba(10,10,10,0.06);
+  --shadow-lg: 0 4px 12px rgba(10,10,10,0.06), 0 24px 56px rgba(10,10,10,0.08);
+
+  /* Radii */
+  --r-xs: 6px;
+  --r-sm: 10px;
+  --r-md: 14px;
+  --r-lg: 18px;
+  --r-xl: 24px;
+
+  /* Fonts */
+  --font-display: 'Bebas Neue', 'Arial Narrow', sans-serif;
+  --font-body: 'Manrope', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+
+  /* Easing */
+  --ease: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
 }
+
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html { scroll-behavior: smooth; }
+html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
 body {
   font-family: var(--font-body);
   color: var(--ink);
-  background: var(--surface-2);
+  background: var(--bg);
   min-height: 100vh;
   overflow-x: hidden;
-  font-size: 15px;
-  line-height: 1.6;
+  font-size: 14.5px;
+  line-height: 1.55;
+  font-weight: 400;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  letter-spacing: -0.005em;
 }
-button, input, textarea, select { font-family: inherit; }
+
+/* Subtle paper texture in bg (no orbs, no noise overlay) */
+body::before {
+  content: '';
+  position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  background-image:
+    radial-gradient(circle at 8% 12%, rgba(14,155,136,0.025) 0%, transparent 32%),
+    radial-gradient(circle at 92% 88%, rgba(199,154,31,0.022) 0%, transparent 36%);
+}
+
+button, input, textarea, select { font-family: inherit; color: inherit; }
 button { cursor: pointer; border: none; background: none; }
 .hidden { display: none !important; }
 
-/* ─── ANIMATIONS ─────────────────────────────── */
+::selection { background: var(--ink); color: var(--on-ink); }
+
+/* ─── ANIMATIONS (restrained) ──────────────── */
 @keyframes fadeUp {
-  from { opacity: 0; transform: translateY(22px); }
+  from { opacity: 0; transform: translateY(8px); }
   to   { opacity: 1; transform: translateY(0); }
 }
-@keyframes fadeIn {
-  from { opacity: 0; } to { opacity: 1; }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
 }
-@keyframes scaleIn {
-  from { opacity: 0; transform: scale(0.92); }
-  to   { opacity: 1; transform: scale(1); }
-}
-@keyframes slideRight {
-  from { opacity: 0; transform: translateX(-20px); }
-  to   { opacity: 1; transform: translateX(0); }
-}
-@keyframes shimmer {
-  0%   { background-position: -400px 0; }
-  100% { background-position: 400px 0; }
-}
-@keyframes pulse-ring {
-  0%   { transform: scale(1); opacity: 0.7; }
-  100% { transform: scale(1.6); opacity: 0; }
-}
-@keyframes float {
-  0%, 100% { transform: translateY(0px); }
-  50%       { transform: translateY(-8px); }
-}
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
-@keyframes countUp {
-  from { opacity: 0; transform: translateY(10px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-@keyframes gradientShift {
-  0%   { background-position: 0% 50%; }
-  50%  { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
-}
-@keyframes orb-float {
-  0%, 100% { transform: translate(0, 0) scale(1); }
-  33%       { transform: translate(30px, -20px) scale(1.04); }
-  66%       { transform: translate(-20px, 15px) scale(0.97); }
-}
+.anim-fadeUp { animation: fadeUp 0.45s var(--ease-out) both; }
+.anim-fadeIn { animation: fadeIn 0.4s ease both; }
+.d1 { animation-delay: 0.04s; }
+.d2 { animation-delay: 0.08s; }
+.d3 { animation-delay: 0.12s; }
+.d4 { animation-delay: 0.16s; }
+.d5 { animation-delay: 0.20s; }
+.d6 { animation-delay: 0.24s; }
 
-.anim-fadeUp   { animation: fadeUp 0.55s var(--ease-out) both; }
-.anim-scaleIn  { animation: scaleIn 0.45s var(--ease-spring) both; }
-.anim-fadeIn   { animation: fadeIn 0.4s ease both; }
-.d1 { animation-delay: 0.05s; }
-.d2 { animation-delay: 0.1s; }
-.d3 { animation-delay: 0.15s; }
-.d4 { animation-delay: 0.2s; }
-.d5 { animation-delay: 0.25s; }
-.d6 { animation-delay: 0.3s; }
-
-/* ─── BG CANVAS ──────────────────────────────── */
-.bg-canvas {
-  position: fixed; inset: 0; z-index: 0; overflow: hidden; pointer-events: none;
-  background: linear-gradient(155deg, #ddf4ef 0%, #f6fdfb 50%, #e4f2f0 100%);
-}
-.orb {
-  position: absolute; border-radius: 50%; filter: blur(0px);
-}
-.orb-1 {
-  width: 700px; height: 700px; left: -250px; top: -180px;
-  background: radial-gradient(circle at 40% 40%, #0e9b88 0%, #076b5d 55%, #04403a 100%);
-  animation: orb-float 18s ease-in-out infinite;
-}
-.orb-2 {
-  width: 380px; height: 380px; right: -100px; bottom: -120px;
-  background: radial-gradient(circle, rgba(197,245,236,0.9) 0%, rgba(197,245,236,0.2) 100%);
-  animation: orb-float 22s ease-in-out infinite reverse;
-}
-.orb-3 {
-  width: 200px; height: 200px; right: 200px; top: 30%;
-  background: radial-gradient(circle, rgba(245,200,66,0.22) 0%, transparent 70%);
-  animation: orb-float 14s ease-in-out infinite 3s;
-}
-.noise-overlay {
-  position: absolute; inset: 0;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.025'/%3E%3C/svg%3E");
-  opacity: 0.4;
-}
-
-/* ─── LOGIN ──────────────────────────────────── */
+/* ─── LOGIN ────────────────────────────────── */
 #loginScreen {
   position: relative; z-index: 10;
   min-height: 100vh;
   display: grid;
-  grid-template-columns: 1.3fr 0.7fr;
-  gap: 0;
-  align-items: stretch;
+  grid-template-columns: 1.2fr 0.8fr;
 }
 .login-hero {
   position: relative;
-  padding: 60px 64px;
+  padding: 56px 64px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  overflow: hidden;
   min-height: 100vh;
+  border-right: 1px solid var(--border);
 }
-.login-hero::before {
-  content: '';
-  position: absolute; inset: 0;
-  background: linear-gradient(135deg, rgba(255,255,255,0.92) 0%, rgba(234,250,247,0.85) 100%);
-  backdrop-filter: blur(2px);
-}
-.login-hero > * { position: relative; z-index: 2; }
 
 .logo-pill {
   display: inline-flex; align-items: center; gap: 10px;
-  background: rgba(255,255,255,0.9);
-  border: 1px solid var(--border-strong);
+  padding: 6px 14px 6px 6px;
+  background: var(--surface);
+  border: 1px solid var(--border-md);
   border-radius: 999px;
-  padding: 8px 16px 8px 8px;
-  box-shadow: var(--shadow-sm);
-  animation: fadeIn 0.5s ease both;
+  width: fit-content;
+  box-shadow: var(--shadow-xs);
+  animation: fadeIn 0.45s ease both;
 }
 .logo-icon {
-  width: 32px; height: 32px; border-radius: 50%;
-  background: var(--teal);
+  width: 28px; height: 28px; border-radius: 8px;
+  background: var(--ink);
+  color: var(--on-ink);
   display: grid; place-items: center;
-  color: white; font-weight: 700; font-size: 16px;
   font-family: var(--font-display);
-  letter-spacing: 0.02em;
+  font-size: 16px;
+  letter-spacing: 0.04em;
+  line-height: 1;
 }
-.logo-pill span { font-weight: 700; font-size: 14px; color: var(--teal-dark); letter-spacing: 0.04em; text-transform: uppercase; }
+.logo-pill span {
+  font-weight: 600; font-size: 12px; color: var(--ink-2);
+  letter-spacing: 0.06em; text-transform: uppercase;
+}
 
-.hero-copy { flex: 1; display: flex; flex-direction: column; justify-content: center; padding: 60px 0 40px; }
+.hero-copy {
+  flex: 1; display: flex; flex-direction: column; justify-content: center;
+  padding: 48px 0 32px;
+}
 .hero-eyebrow {
-  font-size: 11px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase;
-  color: var(--teal); margin-bottom: 20px;
-  animation: fadeUp 0.5s var(--ease-out) 0.1s both;
+  display: inline-flex; align-items: center; gap: 8px;
+  font-size: 11px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--muted); margin-bottom: 28px;
+  animation: fadeUp 0.5s var(--ease-out) 0.08s both;
+}
+.hero-eyebrow::before {
+  content: ''; width: 18px; height: 1px; background: var(--ink); display: inline-block;
 }
 .hero-copy h1 {
   font-family: var(--font-display);
-  font-size: clamp(60px, 7vw, 100px);
-  line-height: 0.9;
-  letter-spacing: 0.01em;
+  font-size: clamp(64px, 8.5vw, 128px);
+  line-height: 0.88;
+  letter-spacing: -0.005em;
   color: var(--ink);
   margin-bottom: 28px;
-  animation: fadeUp 0.6s var(--ease-out) 0.18s both;
+  animation: fadeUp 0.55s var(--ease-out) 0.14s both;
+  font-weight: 400;
 }
 .hero-copy h1 em {
   font-style: normal;
-  color: var(--teal);
+  color: var(--accent-dark);
   display: block;
 }
 .hero-copy p {
-  max-width: 460px;
-  color: var(--muted);
-  font-size: 16px;
-  line-height: 1.75;
-  animation: fadeUp 0.6s var(--ease-out) 0.26s both;
+  max-width: 440px;
+  color: var(--ink-3);
+  font-size: 15px;
+  line-height: 1.65;
+  font-weight: 400;
+  margin-bottom: 36px;
+  animation: fadeUp 0.55s var(--ease-out) 0.22s both;
 }
 
 .feature-pills {
-  display: flex; flex-wrap: wrap; gap: 10px;
-  animation: fadeUp 0.6s var(--ease-out) 0.34s both;
+  display: flex; flex-wrap: wrap; gap: 6px;
+  animation: fadeUp 0.55s var(--ease-out) 0.30s both;
 }
 .fp {
-  display: flex; align-items: center; gap: 8px;
-  padding: 10px 16px;
-  background: rgba(255,255,255,0.85);
-  border: 1px solid var(--border);
+  display: inline-flex; align-items: center; gap: 7px;
+  padding: 7px 13px;
+  background: var(--surface);
+  border: 1px solid var(--border-md);
   border-radius: 999px;
-  font-size: 13px; font-weight: 500; color: var(--ink-2);
-  backdrop-filter: blur(8px);
-  box-shadow: var(--shadow-sm);
-  transition: transform 0.2s var(--ease-spring), box-shadow 0.2s ease;
+  font-size: 12px; font-weight: 500; color: var(--ink-2);
+  transition: border-color 0.2s, background 0.2s;
 }
-.fp:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
-.fp-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--teal); }
-.fp-dot.gold { background: var(--gold-dark); }
-.fp-dot.teal2 { background: #2dc8b0; }
-.fp-dot.ink { background: var(--ink-2); }
+.fp:hover { border-color: var(--border-strong); }
+.fp-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--accent); }
+.fp-dot.gold { background: var(--gold); }
+.fp-dot.dark { background: var(--ink); }
 .fp-dot.muted { background: var(--muted-2); }
 
+.login-foot {
+  font-size: 11px; color: var(--muted-2);
+  font-family: var(--font-mono);
+  letter-spacing: 0.04em;
+  animation: fadeIn 0.5s ease 0.5s both;
+}
+.login-foot::before { content: '— '; }
+
 .login-panel {
-  background: rgba(255,255,255,0.75);
-  backdrop-filter: blur(24px) saturate(1.4);
-  border-left: 1px solid rgba(255,255,255,0.6);
+  background: var(--surface);
   display: flex; flex-direction: column; justify-content: center;
-  padding: 60px 48px;
+  padding: 56px 56px;
   position: relative; z-index: 10;
-  animation: slideRight 0.6s var(--ease-out) 0.1s both;
+  animation: fadeIn 0.55s ease 0.1s both;
 }
 .login-panel h2 {
   font-family: var(--font-display);
-  font-size: 44px;
-  letter-spacing: 0.02em;
+  font-size: 56px;
+  letter-spacing: 0.01em;
   color: var(--ink);
   margin-bottom: 6px;
+  line-height: 0.95;
+  font-weight: 400;
 }
-.login-panel > p { color: var(--muted); margin-bottom: 36px; font-size: 14px; line-height: 1.65; }
-.login-panel > p strong { color: var(--teal-dark); font-family: var(--font-mono); }
+.login-panel > p {
+  color: var(--muted);
+  margin-bottom: 40px;
+  font-size: 13px; line-height: 1.6;
+}
+.login-panel > p strong {
+  color: var(--ink); font-family: var(--font-mono);
+  font-weight: 500; font-size: 12px;
+  background: var(--surface-2);
+  padding: 2px 6px; border-radius: 4px;
+  border: 1px solid var(--border);
+}
 
-.field-wrap { margin-bottom: 18px; }
-.field-wrap label { display: block; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--teal-dark); margin-bottom: 8px; }
+.field-wrap { margin-bottom: 16px; }
+.field-wrap label {
+  display: block; font-size: 11px; font-weight: 600;
+  text-transform: uppercase; letter-spacing: 0.08em;
+  color: var(--muted); margin-bottom: 8px;
+}
 .field-wrap input, .field-wrap select, .field-wrap textarea {
   width: 100%;
-  border: 1.5px solid var(--border);
-  border-radius: var(--r-md);
-  padding: 13px 16px;
-  background: rgba(255,255,255,0.9);
+  border: 1px solid var(--border-md);
+  border-radius: var(--r-sm);
+  padding: 12px 14px;
+  background: var(--surface);
   color: var(--ink);
   outline: none;
-  font-size: 15px;
-  transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+  font-size: 14px;
+  font-weight: 500;
+  transition: border-color 0.18s, box-shadow 0.18s;
+  font-family: var(--font-body);
 }
-.field-wrap textarea { min-height: 110px; resize: vertical; line-height: 1.6; }
-.field-wrap input:focus, .field-wrap select:focus, .field-wrap textarea:focus {
-  border-color: var(--teal);
-  box-shadow: 0 0 0 4px rgba(14,155,136,0.12);
-  background: #fff;
+.field-wrap textarea {
+  min-height: 96px; resize: vertical; line-height: 1.55;
+  font-weight: 400;
+}
+.field-wrap input::placeholder,
+.field-wrap textarea::placeholder { color: var(--muted-2); font-weight: 400; }
+.field-wrap input:focus,
+.field-wrap select:focus,
+.field-wrap textarea:focus {
+  border-color: var(--ink);
+  box-shadow: 0 0 0 3px rgba(10,10,10,0.06);
 }
 
 .btn-primary {
-  width: 100%; padding: 14px; border-radius: var(--r-md);
-  background: var(--teal-dark);
-  color: white; font-size: 15px; font-weight: 700;
-  letter-spacing: 0.04em;
-  box-shadow: 0 8px 24px rgba(7,107,93,0.3);
-  transition: transform 0.2s var(--ease-spring), box-shadow 0.2s;
-  position: relative; overflow: hidden;
+  width: 100%; padding: 13px 20px;
+  border-radius: var(--r-sm);
+  background: var(--ink);
+  color: var(--on-ink);
+  font-size: 13.5px; font-weight: 600;
+  letter-spacing: 0.01em;
+  transition: background 0.18s var(--ease), transform 0.15s var(--ease);
+  font-family: var(--font-body);
 }
-.btn-primary::after {
-  content: ''; position: absolute; inset: 0;
-  background: linear-gradient(135deg, rgba(255,255,255,0.12) 0%, transparent 60%);
-  pointer-events: none;
-}
-.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 12px 32px rgba(7,107,93,0.38); }
-.btn-primary:active { transform: translateY(0); }
+.btn-primary:hover { background: var(--ink-2); }
+.btn-primary:active { transform: scale(0.985); }
 
 .btn-secondary {
-  padding: 11px 18px; border-radius: var(--r-sm);
-  background: var(--surface-3);
-  color: var(--teal-dark); font-size: 14px; font-weight: 600;
-  border: 1px solid var(--border);
-  transition: background 0.2s, transform 0.2s var(--ease-spring);
+  padding: 10px 16px;
+  border-radius: var(--r-sm);
+  background: var(--surface);
+  color: var(--ink-2);
+  font-size: 13px; font-weight: 600;
+  border: 1px solid var(--border-md);
+  transition: border-color 0.18s, background 0.18s;
+  font-family: var(--font-body);
 }
-.btn-secondary:hover { background: var(--teal-light); transform: translateY(-1px); }
+.btn-secondary:hover {
+  border-color: var(--border-strong);
+  background: var(--surface-2);
+}
 
 .btn-ghost {
-  padding: 11px 18px; border-radius: var(--r-sm);
-  color: var(--muted); font-size: 14px; font-weight: 500;
-  border: 1px solid var(--border);
+  padding: 10px 16px;
+  border-radius: var(--r-sm);
+  color: var(--muted);
+  font-size: 13px; font-weight: 500;
   background: transparent;
-  transition: all 0.2s;
+  border: 1px solid transparent;
+  transition: all 0.18s;
+  font-family: var(--font-body);
 }
-.btn-ghost:hover { border-color: var(--border-strong); color: var(--teal-dark); background: var(--teal-xlight); }
+.btn-ghost:hover { color: var(--ink); background: var(--surface-2); }
 
 .btn-danger {
-  padding: 11px 18px; border-radius: var(--r-sm);
-  background: #fff1f1; color: var(--danger); font-size: 14px; font-weight: 600;
-  border: 1px solid rgba(224,82,82,0.18);
-  transition: all 0.2s;
+  padding: 9px 14px;
+  border-radius: var(--r-sm);
+  background: var(--surface);
+  color: var(--danger);
+  font-size: 12.5px; font-weight: 600;
+  border: 1px solid var(--border-md);
+  transition: all 0.18s;
+  font-family: var(--font-body);
 }
-.btn-danger:hover { background: #ffe0e0; transform: translateY(-1px); }
+.btn-danger:hover {
+  background: var(--danger-tint);
+  border-color: rgba(185,28,28,0.18);
+}
 
-.error-msg { color: var(--danger); font-size: 13px; font-weight: 600; margin-top: 10px; min-height: 20px; }
+.error-msg {
+  color: var(--danger); font-size: 12.5px; font-weight: 600;
+  margin-top: 10px; min-height: 18px;
+}
 
-/* ─── APP SHELL ──────────────────────────────── */
+/* ─── APP SHELL ────────────────────────────── */
 #appShell {
   position: relative; z-index: 10;
   min-height: 100vh;
   display: grid;
-  grid-template-columns: 270px minmax(0, 1fr);
-  padding: 20px;
-  gap: 20px;
+  grid-template-columns: 240px minmax(0, 1fr);
 }
 
-/* ─── SIDEBAR ─────────────────────────────────── */
+/* ─── SIDEBAR ──────────────────────────────── */
 .sidebar {
-  position: sticky; top: 20px; align-self: start;
-  height: calc(100vh - 40px);
-  border-radius: var(--r-xl);
-  background: rgba(255,255,255,0.82);
-  backdrop-filter: blur(20px) saturate(1.4);
-  border: 1px solid rgba(255,255,255,0.75);
-  box-shadow: var(--shadow-md);
-  padding: 24px 18px;
+  position: sticky; top: 0; align-self: start;
+  height: 100vh;
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  padding: 22px 14px;
   display: flex; flex-direction: column;
-  animation: scaleIn 0.5s var(--ease-spring) both;
+  animation: fadeIn 0.4s ease both;
 }
 .brand {
-  display: flex; align-items: center; gap: 12px;
-  padding: 4px 8px 20px;
-  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 11px;
+  padding: 4px 8px 22px;
   margin-bottom: 18px;
+  border-bottom: 1px solid var(--border);
 }
-.brand-text h2 { font-family: var(--font-display); font-size: 20px; letter-spacing: 0.04em; color: var(--ink); line-height: 1; }
-.brand-text p { font-size: 11px; color: var(--muted-2); font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; margin-top: 2px; }
+.brand-text h2 {
+  font-family: var(--font-display);
+  font-size: 22px;
+  letter-spacing: 0.04em;
+  color: var(--ink);
+  line-height: 1;
+  font-weight: 400;
+}
+.brand-text p {
+  font-size: 10px; color: var(--muted-2);
+  font-weight: 600; letter-spacing: 0.10em;
+  text-transform: uppercase; margin-top: 3px;
+}
 
-.nav { display: flex; flex-direction: column; gap: 4px; }
+.nav-section-label {
+  font-size: 10px; font-weight: 600; color: var(--muted-2);
+  text-transform: uppercase; letter-spacing: 0.10em;
+  padding: 8px 10px 6px;
+}
+
+.nav { display: flex; flex-direction: column; gap: 2px; }
 .nav-btn {
   width: 100%; text-align: left;
-  border-radius: var(--r-md);
-  padding: 11px 14px;
-  display: flex; align-items: center; gap: 10px;
-  font-size: 14px; font-weight: 600; color: var(--muted);
-  transition: all 0.22s var(--ease-out);
+  border-radius: var(--r-sm);
+  padding: 9px 11px;
+  display: flex; align-items: center; gap: 11px;
+  font-size: 13.5px; font-weight: 500; color: var(--ink-3);
+  transition: all 0.16s var(--ease);
   position: relative;
+  font-family: var(--font-body);
 }
-.nav-btn .nav-icon { font-size: 16px; width: 20px; text-align: center; opacity: 0.7; transition: opacity 0.2s; }
-.nav-btn:hover { background: var(--teal-xlight); color: var(--teal-dark); }
-.nav-btn:hover .nav-icon { opacity: 1; }
+.nav-btn .nav-icon {
+  font-size: 13px; width: 16px; text-align: center;
+  color: var(--muted-2);
+  transition: color 0.16s;
+}
+.nav-btn:hover {
+  background: var(--surface-2);
+  color: var(--ink);
+}
+.nav-btn:hover .nav-icon { color: var(--ink-2); }
 .nav-btn.active {
-  background: var(--teal-dark);
-  color: white;
-  box-shadow: 0 8px 24px rgba(7,107,93,0.28);
+  background: var(--ink);
+  color: var(--on-ink);
+  font-weight: 600;
 }
-.nav-btn.active .nav-icon { opacity: 1; }
-.nav-btn.active::before {
-  content: '';
-  position: absolute; left: 0; top: 20%; bottom: 20%;
-  width: 3px; border-radius: 2px;
-  background: rgba(255,255,255,0.5);
-}
+.nav-btn.active .nav-icon { color: var(--on-ink); opacity: 0.7; }
 
 .sidebar-footer {
-  margin-top: auto; padding-top: 16px;
+  margin-top: auto; padding-top: 14px;
   border-top: 1px solid var(--border);
 }
 
-/* ─── MAIN ───────────────────────────────────── */
-.main-content { min-width: 0; }
+/* ─── MAIN ─────────────────────────────────── */
+.main-content {
+  min-width: 0;
+  padding: 32px 40px 56px;
+  max-width: 1280px;
+  margin: 0 auto;
+  width: 100%;
+}
 
 .topbar {
-  display: flex; justify-content: space-between; align-items: center;
-  margin-bottom: 24px;
-  animation: fadeUp 0.45s var(--ease-out) 0.05s both;
+  display: flex; justify-content: space-between; align-items: flex-end;
+  margin-bottom: 36px;
+  padding-bottom: 22px;
+  border-bottom: 1px solid var(--border);
+  animation: fadeUp 0.4s var(--ease-out) 0.04s both;
 }
-.topbar-left { display: flex; align-items: center; gap: 14px; }
+.topbar-left { display: flex; align-items: center; gap: 14px; flex: 1; }
 .page-title {
   font-family: var(--font-display);
-  font-size: 42px; letter-spacing: 0.02em; color: var(--ink); line-height: 1;
+  font-size: 44px;
+  letter-spacing: 0.02em;
+  color: var(--ink);
+  line-height: 1;
+  font-weight: 400;
 }
+.topbar-right { display: flex; align-items: center; gap: 10px; }
 .date-pill {
-  display: flex; align-items: center; gap: 8px;
-  padding: 10px 18px;
-  background: rgba(255,255,255,0.85);
-  border: 1px solid var(--border);
+  display: flex; align-items: center; gap: 7px;
+  padding: 7px 13px;
+  background: var(--surface);
+  border: 1px solid var(--border-md);
   border-radius: 999px;
-  font-size: 13px; font-weight: 600; color: var(--teal-dark);
-  box-shadow: var(--shadow-sm);
-  backdrop-filter: blur(8px);
+  font-size: 12px; font-weight: 600; color: var(--ink-2);
+  font-family: var(--font-mono);
+  letter-spacing: -0.01em;
 }
 .date-dot {
-  width: 8px; height: 8px; border-radius: 50%; background: var(--teal);
-  box-shadow: 0 0 0 0 rgba(14,155,136,0.5);
-  animation: pulse-ring 2s ease infinite;
-  position: relative;
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--accent);
+  animation: pulse-dot 2.2s ease infinite;
 }
 
-/* ─── SECTIONS ───────────────────────────────── */
+/* ─── SECTIONS ─────────────────────────────── */
 .section { display: none; }
 .section.active { display: block; }
 
-/* Hero banner */
-.hero-banner {
-  position: relative; overflow: hidden;
-  border-radius: var(--r-xl);
-  background: linear-gradient(135deg, #fff 0%, #edfaf7 50%, #b8f4dc 100%);
-  box-shadow: var(--shadow-lg);
-  padding: 36px 40px;
-  margin-bottom: 22px;
-  animation: fadeUp 0.55s var(--ease-out) 0.05s both;
+/* Section intro — minimal, no banner */
+.section-intro {
+  margin-bottom: 28px;
+  animation: fadeUp 0.5s var(--ease-out) both;
 }
-.hero-banner::after {
-  content: '';
-  position: absolute;
-  width: 420px; height: 420px; border-radius: 50%;
-  right: -120px; top: -130px;
-  background: radial-gradient(circle, rgba(14,155,136,0.75) 0%, rgba(7,107,93,0.9) 100%);
-  pointer-events: none;
+.section-intro .eyebrow {
+  font-size: 10.5px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.14em;
+  color: var(--accent-dark);
+  margin-bottom: 14px;
+  display: inline-flex; align-items: center; gap: 8px;
 }
-.hero-banner > * { position: relative; z-index: 1; }
-.hero-banner h2 {
+.section-intro .eyebrow::before {
+  content: ''; width: 16px; height: 1px; background: var(--accent-dark);
+}
+.section-intro h2 {
   font-family: var(--font-display);
-  font-size: clamp(32px, 4vw, 52px);
-  letter-spacing: 0.02em;
-  color: var(--ink); line-height: 1;
+  font-size: clamp(36px, 4.8vw, 58px);
+  letter-spacing: 0.005em;
+  color: var(--ink);
+  line-height: 0.96;
   margin-bottom: 10px;
+  font-weight: 400;
 }
-.hero-banner p { color: var(--muted); font-size: 15px; line-height: 1.7; max-width: 600px; }
+.section-intro p {
+  color: var(--ink-3);
+  font-size: 14.5px;
+  line-height: 1.65;
+  max-width: 620px;
+}
 
-/* Cards */
+/* Cards — solid, no glass */
 .card {
-  background: rgba(255,255,255,0.88);
-  border: 1px solid rgba(255,255,255,0.8);
-  border-radius: var(--r-lg);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
   padding: 22px;
-  box-shadow: var(--shadow-sm);
-  backdrop-filter: blur(8px);
-  transition: box-shadow 0.2s, transform 0.2s var(--ease-spring);
+  transition: border-color 0.2s, box-shadow 0.2s;
 }
-.card:hover { box-shadow: var(--shadow-md); }
-.card h3 { font-family: var(--font-display); font-size: 22px; letter-spacing: 0.03em; color: var(--ink); margin-bottom: 16px; line-height: 1; }
+.card:hover { border-color: var(--border-md); }
+.card h3 {
+  font-family: var(--font-display);
+  font-size: 22px;
+  letter-spacing: 0.03em;
+  color: var(--ink);
+  margin-bottom: 4px;
+  line-height: 1;
+  font-weight: 400;
+}
+.card-sub {
+  font-size: 12px; color: var(--muted);
+  margin-bottom: 18px;
+  letter-spacing: 0.01em;
+}
 
 /* Metric cards */
 .metric-card {
-  min-height: 140px;
-  display: flex; flex-direction: column; justify-content: space-between;
+  min-height: 130px;
+  display: flex; flex-direction: column;
+  justify-content: space-between;
+  padding: 20px 22px;
 }
-.metric-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); }
+.metric-label {
+  font-size: 10.5px; font-weight: 600;
+  text-transform: uppercase; letter-spacing: 0.10em;
+  color: var(--muted);
+}
 .metric-value {
   font-family: var(--font-display);
-  font-size: 40px; letter-spacing: 0.02em; color: var(--ink);
-  line-height: 1; margin: 8px 0 4px;
-  animation: countUp 0.5s var(--ease-out) both;
+  font-size: 44px; letter-spacing: 0.01em; color: var(--ink);
+  line-height: 1; margin: 14px 0 6px;
+  font-weight: 400;
 }
-.metric-note { font-size: 12px; color: var(--muted-2); line-height: 1.45; }
+.metric-value.accent { color: var(--accent-dark); }
+.metric-note {
+  font-size: 12px; color: var(--muted-2);
+  line-height: 1.45;
+}
 
 /* Grid layouts */
-.grid { display: grid; gap: 16px; }
+.grid { display: grid; gap: 14px; }
 .cols-4 { grid-template-columns: repeat(4, minmax(0,1fr)); }
 .cols-3 { grid-template-columns: repeat(3, minmax(0,1fr)); }
 .cols-2 { grid-template-columns: repeat(2, minmax(0,1fr)); }
 
 /* Form grid */
-.form-grid { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 16px; }
+.form-grid { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 14px; }
 .full { grid-column: 1 / -1; }
-.actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 18px; }
+.actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 18px; align-items: center; }
 
 /* Check tiles */
-.check-grid { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 10px; }
+.check-grid { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 8px; }
 .check-tile {
-  border: 1.5px solid var(--border);
-  border-radius: var(--r-md);
-  padding: 14px;
-  background: rgba(255,255,255,0.7);
+  border: 1px solid var(--border-md);
+  border-radius: var(--r-sm);
+  padding: 12px 14px;
+  background: var(--surface);
   display: flex; gap: 10px; align-items: flex-start;
   cursor: pointer;
-  transition: border-color 0.2s, background 0.2s, transform 0.2s var(--ease-spring), box-shadow 0.2s;
+  transition: all 0.16s var(--ease);
   user-select: none;
-  min-height: 90px;
+  min-height: 78px;
 }
-.check-tile:hover { transform: translateY(-2px); box-shadow: var(--shadow-sm); border-color: var(--border-strong); }
-.check-tile input[type="checkbox"] { width: auto; margin-top: 3px; accent-color: var(--teal); flex-shrink: 0; }
-.check-tile input[type="checkbox"]:checked ~ div strong { color: var(--teal-dark); }
+.check-tile:hover {
+  border-color: var(--border-strong);
+  background: var(--surface-2);
+}
+.check-tile input[type="checkbox"] {
+  width: 15px; height: 15px; margin-top: 2px;
+  accent-color: var(--ink);
+  flex-shrink: 0;
+  cursor: pointer;
+}
 .check-tile:has(input:checked) {
-  background: var(--teal-xlight);
-  border-color: var(--teal);
-  box-shadow: 0 0 0 3px rgba(14,155,136,0.1);
+  background: var(--accent-tint);
+  border-color: var(--accent);
 }
-.check-tile strong { display: block; font-size: 13px; margin-bottom: 3px; color: var(--ink-2); }
-.check-tile span { font-size: 11px; color: var(--muted); line-height: 1.4; }
+.check-tile:has(input:checked) strong { color: var(--accent-deep); }
+.check-tile strong {
+  display: block; font-size: 13px; margin-bottom: 2px;
+  color: var(--ink); font-weight: 600;
+}
+.check-tile span {
+  font-size: 11.5px; color: var(--muted); line-height: 1.4;
+}
 
-/* Score preview */
+/* Score panel — dark, restrained */
 .score-panel {
-  border-radius: var(--r-lg);
-  background: linear-gradient(135deg, var(--teal-dark) 0%, var(--teal-deep) 100%);
-  padding: 28px;
-  color: white;
-  box-shadow: 0 16px 40px rgba(4,64,58,0.3);
-  position: relative; overflow: hidden;
+  border-radius: var(--r-md);
+  background: var(--surface-ink);
+  padding: 26px;
+  color: var(--on-ink);
+  border: 1px solid var(--surface-ink-2);
+  display: flex; flex-direction: column;
+  justify-content: space-between;
+  min-height: 100%;
 }
-.score-panel::before {
-  content: '';
-  position: absolute;
-  width: 300px; height: 300px; border-radius: 50%;
-  right: -80px; top: -80px;
-  background: rgba(255,255,255,0.05);
+.score-top {
+  display: flex; justify-content: space-between; align-items: flex-start;
+}
+.score-label {
+  font-size: 10.5px; font-weight: 600;
+  text-transform: uppercase; letter-spacing: 0.14em;
+  color: rgba(250,250,249,0.55);
+}
+.score-tag {
+  font-size: 10px; font-weight: 600;
+  padding: 4px 9px; border-radius: 999px;
+  background: rgba(250,250,249,0.08);
+  color: rgba(250,250,249,0.7);
+  letter-spacing: 0.06em; text-transform: uppercase;
+  font-family: var(--font-mono);
 }
 .score-number {
   font-family: var(--font-display);
-  font-size: 88px;
-  letter-spacing: -0.02em;
-  line-height: 1;
-  margin: 12px 0;
-  text-shadow: 0 4px 20px rgba(0,0,0,0.2);
+  font-size: 112px;
+  letter-spacing: -0.01em;
+  line-height: 0.9;
+  margin: 18px 0 4px;
+  font-weight: 400;
+  color: var(--on-ink);
 }
-.score-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.14em; opacity: 0.65; }
-.score-note { font-size: 12px; opacity: 0.6; line-height: 1.55; margin-top: 12px; }
-.score-bar-wrap { margin-top: 16px; }
-.score-bar-track { height: 6px; background: rgba(255,255,255,0.15); border-radius: 99px; overflow: hidden; }
-.score-bar-fill { height: 100%; background: var(--gold); border-radius: 99px; transition: width 0.6s var(--ease-out); }
+.score-denom {
+  font-family: var(--font-mono);
+  font-size: 13px; color: rgba(250,250,249,0.45);
+  letter-spacing: 0.04em;
+  margin-bottom: 18px;
+}
+.score-bar-wrap { margin-top: 8px; }
+.score-bar-track {
+  height: 4px; background: rgba(250,250,249,0.10);
+  border-radius: 99px; overflow: hidden;
+}
+.score-bar-fill {
+  height: 100%;
+  background: var(--accent);
+  border-radius: 99px;
+  transition: width 0.6s var(--ease-out);
+}
+.score-breakdown {
+  font-size: 11px; color: rgba(250,250,249,0.45);
+  line-height: 1.7; margin-top: 18px;
+  font-family: var(--font-mono);
+  letter-spacing: -0.005em;
+}
 
 /* List items */
-.list { display: flex; flex-direction: column; gap: 10px; margin-top: 12px; }
+.list { display: flex; flex-direction: column; gap: 8px; margin-top: 14px; }
 .list-item {
   border: 1px solid var(--border);
-  border-radius: var(--r-md);
+  border-radius: var(--r-sm);
   padding: 14px 16px;
-  background: rgba(255,255,255,0.72);
+  background: var(--surface);
   display: grid; grid-template-columns: minmax(0,1fr) auto;
   gap: 14px; align-items: start;
-  transition: transform 0.2s var(--ease-spring), box-shadow 0.2s;
-  animation: fadeUp 0.4s var(--ease-out) both;
+  transition: border-color 0.16s, background 0.16s;
+  animation: fadeUp 0.36s var(--ease-out) both;
 }
-.list-item:hover { transform: translateX(4px); box-shadow: var(--shadow-sm); }
-.list-item h4 { font-size: 15px; font-weight: 700; color: var(--ink); margin-bottom: 4px; }
-.list-item p { font-size: 13px; color: var(--muted); line-height: 1.5; }
+.list-item:hover {
+  border-color: var(--border-md);
+  background: var(--surface-2);
+}
+.list-item h4 {
+  font-size: 14px; font-weight: 600;
+  color: var(--ink); margin-bottom: 3px;
+  letter-spacing: -0.005em;
+}
+.list-item p {
+  font-size: 12.5px; color: var(--muted);
+  line-height: 1.5;
+}
 
 /* Badges */
 a.badge { text-decoration: none; }
-.badge-row { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+.badge-row { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 9px; }
 .badge {
-  padding: 4px 10px; border-radius: 999px;
-  font-size: 11px; font-weight: 700;
-  background: var(--teal-xlight); color: var(--teal-dark);
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-size: 10.5px; font-weight: 600;
+  background: var(--surface-2);
+  color: var(--ink-2);
   border: 1px solid var(--border);
-  letter-spacing: 0.02em;
+  letter-spacing: 0.01em;
+  font-family: var(--font-mono);
 }
-.badge.dark { background: var(--teal-dark); color: white; border-color: transparent; }
-.badge.gold { background: rgba(245,200,66,0.2); color: var(--gold-dark); border-color: rgba(245,200,66,0.4); }
-.badge.status-done { background: rgba(16,185,129,0.1); color: #047857; border-color: rgba(16,185,129,0.2); }
-.badge.status-wip { background: rgba(245,200,66,0.15); color: #92400e; border-color: rgba(245,200,66,0.3); }
-
-/* Audio box */
-.audio-box {
-  border: 1.5px dashed var(--border-strong);
-  border-radius: var(--r-md);
-  padding: 16px;
-  background: rgba(197,245,236,0.25);
+.badge.dark {
+  background: var(--ink); color: var(--on-ink);
+  border-color: transparent;
 }
-audio { width: 100%; margin-top: 10px; }
+.badge.accent {
+  background: var(--accent-tint); color: var(--accent-deep);
+  border-color: var(--accent-line);
+}
+.badge.gold {
+  background: var(--gold-tint); color: #7a5a0c;
+  border-color: rgba(199,154,31,0.22);
+}
+.badge.status-done {
+  background: rgba(47,125,95,0.10); color: #1e5440;
+  border-color: rgba(47,125,95,0.20);
+}
+.badge.status-wip {
+  background: var(--gold-tint); color: #7a5a0c;
+  border-color: rgba(199,154,31,0.22);
+}
 
-/* Weekly prompt box */
+/* Weekly prompt textarea */
 #aiPrompt {
   font-family: var(--font-mono);
   font-size: 12px;
   line-height: 1.7;
-  background: var(--ink);
-  color: #b8f4dc;
-  border: none;
-  border-radius: var(--r-md);
+  background: var(--surface-ink);
+  color: #b8e6db;
+  border: 1px solid var(--surface-ink-2);
+  border-radius: var(--r-sm);
   padding: 18px;
-  min-height: 260px;
+  min-height: 280px;
   resize: vertical;
+  width: 100%;
+  letter-spacing: -0.005em;
 }
 
-/* Progress indicator strip */
+/* Progress strip */
 .progress-strip {
-  display: flex; gap: 6px; margin-bottom: 22px;
-  animation: fadeUp 0.45s var(--ease-out) 0.1s both;
+  display: grid; grid-template-columns: repeat(5, 1fr);
+  gap: 4px; margin-bottom: 28px;
+  animation: fadeUp 0.4s var(--ease-out) 0.06s both;
 }
 .strip-item {
-  flex: 1; height: 5px; border-radius: 99px;
-  background: var(--border);
+  display: flex; flex-direction: column; gap: 6px;
+}
+.strip-bar {
+  height: 3px; border-radius: 99px;
+  background: var(--surface-3);
   overflow: hidden; position: relative;
 }
 .strip-fill {
   position: absolute; left: 0; top: 0; bottom: 0;
-  border-radius: 99px; background: var(--teal);
+  border-radius: 99px; background: var(--ink);
   transition: width 0.6s var(--ease-out);
 }
-.strip-fill.done { background: var(--teal); }
-.strip-fill.partial { background: var(--gold); }
-.strip-fill.empty { background: transparent; }
+.strip-label {
+  font-size: 10px; color: var(--muted-2);
+  font-weight: 600; letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
 
 /* Mobile menu */
-.mobile-menu-btn { display: none; }
+.mobile-menu-btn {
+  display: none;
+  padding: 8px 12px;
+  background: var(--surface);
+  border: 1px solid var(--border-md);
+  border-radius: var(--r-sm);
+  font-size: 12px; font-weight: 600;
+  color: var(--ink);
+  font-family: var(--font-body);
+}
 
 /* Scrollbar */
-::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar { width: 8px; height: 8px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 99px; }
-::-webkit-scrollbar-thumb:hover { background: var(--teal); }
+::-webkit-scrollbar-thumb {
+  background: var(--border-strong);
+  border-radius: 99px;
+  border: 2px solid var(--bg);
+}
+::-webkit-scrollbar-thumb:hover { background: var(--muted-2); }
 
-/* Tooltip-like preview on hover */
-.metric-card .metric-value { position: relative; }
-
-/* Loading skeleton shimmer for empty states */
+/* Empty states */
 .empty-state {
   text-align: center; padding: 32px 20px;
-  color: var(--muted-2); font-size: 14px;
+  color: var(--muted-2); font-size: 13px;
+  border: 1px dashed var(--border-md);
+  border-radius: var(--r-sm);
+  background: var(--surface-2);
 }
-.empty-state svg { margin-bottom: 10px; opacity: 0.3; }
 
-/* ─── RESPONSIVE ─────────────────────────────── */
+/* ─── RESPONSIVE ───────────────────────────── */
 @media (max-width: 1100px) {
   #loginScreen { grid-template-columns: 1fr; }
-  .login-hero { min-height: 50vh; padding: 40px; }
-  .hero-copy h1 { font-size: 64px; }
-  .login-panel { padding: 40px 36px; }
+  .login-hero { min-height: 50vh; padding: 36px 32px; border-right: none; border-bottom: 1px solid var(--border); }
+  .hero-copy h1 { font-size: 72px; }
+  .login-panel { padding: 40px 32px; }
   #appShell { grid-template-columns: 1fr; }
   .sidebar {
     position: fixed; z-index: 50;
-    left: 16px; right: 16px; top: 16px;
-    height: auto; max-height: calc(100vh - 32px);
+    left: 14px; right: 14px; top: 14px;
+    height: auto; max-height: calc(100vh - 28px);
     overflow-y: auto;
+    border: 1px solid var(--border-md);
+    border-radius: var(--r-md);
+    box-shadow: var(--shadow-lg);
     transform: translateY(-110%);
     transition: transform 0.3s var(--ease-out);
   }
   .sidebar.open { transform: translateY(0); }
-  .mobile-menu-btn { display: block; }
+  .mobile-menu-btn { display: inline-flex; }
+  .main-content { padding: 24px 24px 48px; }
   .cols-4, .cols-3 { grid-template-columns: repeat(2, minmax(0,1fr)); }
   .check-grid { grid-template-columns: repeat(2, minmax(0,1fr)); }
 }
 @media (max-width: 680px) {
-  #appShell { padding: 12px; }
-  .hero-banner { padding: 24px; }
-  .page-title { font-size: 30px; }
+  .main-content { padding: 18px 16px 40px; }
+  .page-title { font-size: 32px; }
+  .topbar { flex-direction: column; align-items: flex-start; gap: 12px; padding-bottom: 16px; margin-bottom: 24px; }
+  .topbar-right { width: 100%; justify-content: flex-start; }
   .cols-4, .cols-3, .cols-2, .form-grid, .check-grid { grid-template-columns: 1fr; }
-  .topbar { flex-direction: column; align-items: flex-start; gap: 10px; }
-  .login-hero { padding: 28px; }
+  .progress-strip { grid-template-columns: repeat(5, 1fr); }
+  .progress-strip .strip-label { display: none; }
+  .login-hero { padding: 28px 22px; }
   .feature-pills { display: none; }
+  .section-intro h2 { font-size: 38px; }
 }
-
 @media (max-width: 480px) {
-  body { font-size: 14px; }
-  #loginScreen { min-height: 100vh; }
+  body { font-size: 13.5px; }
   .login-hero { min-height: 42vh; padding: 24px 20px; }
-  .hero-copy { padding: 42px 0 24px; }
-  .hero-copy h1 { font-size: 52px; }
-  .login-panel { padding: 28px 20px; }
-  .login-panel h2 { font-size: 38px; }
-  .hero-banner h2 { font-size: 34px; }
-  .hero-banner::after { width: 260px; height: 260px; right: -120px; top: -120px; }
-  .card { padding: 18px; border-radius: 22px; }
-  .metric-value { font-size: 34px; }
-  .score-number { font-size: 74px; }
+  .hero-copy { padding: 32px 0 22px; }
+  .hero-copy h1 { font-size: 60px; }
+  .login-panel { padding: 28px 22px; }
+  .login-panel h2 { font-size: 44px; }
+  .section-intro h2 { font-size: 34px; }
+  .card { padding: 18px; }
+  .metric-value { font-size: 38px; }
+  .score-number { font-size: 88px; }
   .list-item { grid-template-columns: 1fr; }
   .list-item .btn-danger { width: 100%; }
   .actions button { width: 100% !important; }
-  .date-pill { width: 100%; justify-content: center; }
-  .sidebar { left: 10px; right: 10px; top: 10px; max-height: calc(100vh - 20px); }
 }
-
-/* ─── TIMING HINT ───────────────────────────── */
-.timing-hint {
-  display: flex; align-items: flex-start; gap: 14px;
-  background: linear-gradient(135deg, rgba(14,155,136,0.08) 0%, rgba(245,200,66,0.10) 100%);
-  border: 1px solid var(--border);
-  border-left: 3px solid var(--teal);
-  border-radius: var(--r-md);
-  padding: 14px 18px;
-  margin-bottom: 20px;
-  backdrop-filter: blur(8px);
-}
-.timing-hint .hint-icon {
-  font-size: 22px; line-height: 1;
-  filter: drop-shadow(0 2px 6px rgba(7,107,93,0.25));
-  margin-top: 1px;
-}
-.timing-hint .hint-body strong {
-  display: block; font-size: 13px; font-weight: 700;
-  color: var(--teal-dark); letter-spacing: 0.02em;
-  margin-bottom: 3px;
-}
-.timing-hint .hint-body span {
-  display: block; font-size: 12.5px; color: var(--ink-2);
-  line-height: 1.6;
-}
-
-/* ─── DATE SELECTOR ─────────────────────────── */
-.date-selector {
-  background: var(--surface-3);
-  border: 1px solid var(--border);
-  border-radius: var(--r-md);
-  padding: 14px 16px;
-  margin-bottom: 18px;
-}
-.date-selector .ds-row {
-  display: flex; flex-wrap: wrap; align-items: center; gap: 12px;
-}
-.date-selector .ds-label {
-  font-size: 11px; font-weight: 700; text-transform: uppercase;
-  letter-spacing: 0.1em; color: var(--teal-dark);
-}
-.date-selector input[type="date"] {
-  border: 1.5px solid var(--border);
-  border-radius: var(--r-sm);
-  padding: 8px 12px;
-  background: #fff;
-  font-family: var(--font-mono);
-  font-size: 13px;
-  color: var(--ink);
-  outline: none;
-  transition: border-color 0.2s, box-shadow 0.2s;
-}
-.date-selector input[type="date"]:focus {
-  border-color: var(--teal);
-  box-shadow: 0 0 0 3px rgba(14,155,136,0.12);
-}
-.ds-quicks { display: flex; gap: 6px; margin-left: auto; }
-.ds-quick {
-  padding: 7px 14px; border-radius: 999px;
-  background: #fff;
-  border: 1px solid var(--border);
-  font-size: 12px; font-weight: 600;
-  color: var(--muted);
-  transition: all 0.2s var(--ease-spring);
-}
-.ds-quick:hover {
-  background: var(--teal-light);
-  color: var(--teal-dark);
-  border-color: var(--border-strong);
-  transform: translateY(-1px);
-}
-.ds-quick.active {
-  background: var(--teal-dark);
-  color: #fff;
-  border-color: transparent;
-}
-.ds-status {
-  font-size: 11.5px; font-weight: 600;
-  margin-top: 10px;
-  padding-top: 10px;
-  border-top: 1px dashed var(--border);
-  color: var(--muted);
-  letter-spacing: 0.02em;
-}
-.ds-status.editing { color: var(--gold-dark); }
-.ds-status.backfill { color: var(--teal-dark); }
-.ds-status.future { color: var(--danger); }
-
-@media (max-width: 680px) {
-  .date-selector .ds-row { flex-direction: column; align-items: stretch; }
-  .ds-quicks { margin-left: 0; justify-content: stretch; }
-  .ds-quick { flex: 1; }
-}
-
-
-
-/* ─── THEMES ─────────────────────────────────── */
-/* Default (Teal) is already in :root. These override for other themes. */
-
-[data-theme="sunset"] {
-  --teal: #e76f51;
-  --teal-dark: #c34a2c;
-  --teal-deep: #6d2818;
-  --teal-light: #fcd9cb;
-  --teal-xlight: #fdeee7;
-  --gold: #f4a261;
-  --gold-dark: #b45309;
-  --border: rgba(231,111,81,0.16);
-  --border-strong: rgba(231,111,81,0.32);
-  --shadow-sm: 0 2px 8px rgba(109,40,24,0.08);
-  --shadow-md: 0 8px 24px rgba(109,40,24,0.14);
-  --shadow-lg: 0 20px 50px rgba(109,40,24,0.18);
-}
-
-[data-theme="royal"] {
-  --teal: #7c3aed;
-  --teal-dark: #5b21b6;
-  --teal-deep: #2e1065;
-  --teal-light: #ddd6fe;
-  --teal-xlight: #f3f0ff;
-  --gold: #fbbf24;
-  --gold-dark: #b45309;
-  --border: rgba(124,58,237,0.16);
-  --border-strong: rgba(124,58,237,0.32);
-  --shadow-sm: 0 2px 8px rgba(46,16,101,0.10);
-  --shadow-md: 0 8px 24px rgba(46,16,101,0.16);
-  --shadow-lg: 0 20px 50px rgba(46,16,101,0.20);
-}
-
-[data-theme="forest"] {
-  --teal: #16a34a;
-  --teal-dark: #15803d;
-  --teal-deep: #14532d;
-  --teal-light: #bbf7d0;
-  --teal-xlight: #ecfdf5;
-  --gold: #eab308;
-  --gold-dark: #a16207;
-  --border: rgba(22,163,74,0.16);
-  --border-strong: rgba(22,163,74,0.32);
-}
-
-[data-theme="rose"] {
-  --teal: #e11d74;
-  --teal-dark: #be185d;
-  --teal-deep: #831843;
-  --teal-light: #fbcfe8;
-  --teal-xlight: #fdf2f8;
-  --gold: #f59e0b;
-  --gold-dark: #b45309;
-  --border: rgba(225,29,116,0.16);
-  --border-strong: rgba(225,29,116,0.32);
-}
-
-[data-theme="mono"] {
-  --teal: #475569;
-  --teal-dark: #1e293b;
-  --teal-deep: #0f172a;
-  --teal-light: #cbd5e1;
-  --teal-xlight: #f1f5f9;
-  --gold: #f59e0b;
-  --gold-dark: #b45309;
-  --border: rgba(71,85,105,0.16);
-  --border-strong: rgba(71,85,105,0.32);
-}
-
-/* ── DARK THEMES ── */
-[data-theme="midnight"] {
-  --teal: #38bdf8;
-  --teal-dark: #0ea5e9;
-  --teal-deep: #0c4a6e;
-  --teal-light: #1e3a5f;
-  --teal-xlight: #1e293b;
-  --gold: #fbbf24;
-  --gold-dark: #fcd34d;
-  --danger: #f87171;
-  --ink: #f1f5f9;
-  --ink-2: #cbd5e1;
-  --muted: #94a3b8;
-  --muted-2: #64748b;
-  --surface: #1e293b;
-  --surface-2: #0f172a;
-  --surface-3: #334155;
-  --border: rgba(56,189,248,0.18);
-  --border-strong: rgba(56,189,248,0.36);
-  --shadow-sm: 0 2px 8px rgba(0,0,0,0.3);
-  --shadow-md: 0 8px 24px rgba(0,0,0,0.4);
-  --shadow-lg: 0 20px 50px rgba(0,0,0,0.5);
-}
-
-[data-theme="obsidian"] {
-  --teal: #fbbf24;
-  --teal-dark: #d97706;
-  --teal-deep: #78350f;
-  --teal-light: #3f3f46;
-  --teal-xlight: #27272a;
-  --gold: #f59e0b;
-  --gold-dark: #fcd34d;
-  --danger: #f87171;
-  --ink: #fafafa;
-  --ink-2: #d4d4d8;
-  --muted: #a1a1aa;
-  --muted-2: #71717a;
-  --surface: #27272a;
-  --surface-2: #18181b;
-  --surface-3: #3f3f46;
-  --border: rgba(251,191,36,0.18);
-  --border-strong: rgba(251,191,36,0.36);
-  --shadow-sm: 0 2px 8px rgba(0,0,0,0.3);
-  --shadow-md: 0 8px 24px rgba(0,0,0,0.4);
-  --shadow-lg: 0 20px 50px rgba(0,0,0,0.5);
-}
-
-/* Dark theme global tweaks */
-[data-theme="midnight"] body,
-[data-theme="obsidian"] body { background: var(--surface-2); }
-
-[data-theme="midnight"] .bg-canvas,
-[data-theme="obsidian"] .bg-canvas {
-  background: linear-gradient(155deg, var(--surface-2) 0%, var(--surface) 50%, var(--surface-2) 100%);
-}
-[data-theme="midnight"] .orb-1 {
-  background: radial-gradient(circle at 40% 40%, #1e3a5f 0%, #0c4a6e 55%, #0f172a 100%);
-}
-[data-theme="obsidian"] .orb-1 {
-  background: radial-gradient(circle at 40% 40%, #3f3f46 0%, #18181b 55%, #000 100%);
-}
-
-[data-theme="midnight"] .hero-banner,
-[data-theme="obsidian"] .hero-banner {
-  background: linear-gradient(135deg, var(--surface) 0%, var(--surface-3) 50%, var(--teal-light) 100%);
-}
-[data-theme="midnight"] .hero-banner p,
-[data-theme="obsidian"] .hero-banner p { color: var(--ink-2); }
-
-[data-theme="midnight"] .card,
-[data-theme="obsidian"] .card {
-  background: var(--surface);
-  border-color: var(--border);
-}
-
-[data-theme="midnight"] .field-wrap input,
-[data-theme="midnight"] .field-wrap select,
-[data-theme="midnight"] .field-wrap textarea,
-[data-theme="obsidian"] .field-wrap input,
-[data-theme="obsidian"] .field-wrap select,
-[data-theme="obsidian"] .field-wrap textarea {
-  background: var(--surface-3);
-  color: var(--ink);
-}
-
-[data-theme="midnight"] .sidebar,
-[data-theme="obsidian"] .sidebar {
-  background: var(--surface);
-  border-color: var(--border);
-}
-
-[data-theme="midnight"] .date-pill,
-[data-theme="obsidian"] .date-pill,
-[data-theme="midnight"] .fp,
-[data-theme="obsidian"] .fp,
-[data-theme="midnight"] .logo-pill,
-[data-theme="obsidian"] .logo-pill {
-  background: var(--surface);
-}
-
-[data-theme="midnight"] .login-hero::before,
-[data-theme="obsidian"] .login-hero::before {
-  background: linear-gradient(135deg, rgba(15,23,42,0.92) 0%, rgba(30,41,59,0.85) 100%);
-}
-[data-theme="midnight"] .login-panel,
-[data-theme="obsidian"] .login-panel {
-  background: rgba(30,41,59,0.85);
-}
-
-/* ─── THEME SWITCHER — SIDEBAR ──────────────── */
-.theme-row {
-  padding: 14px 6px 8px;
-  border-top: 1px solid var(--border);
-  margin-top: 10px;
-}
-.theme-row-label {
-  font-size: 10px; font-weight: 700; text-transform: uppercase;
-  letter-spacing: 0.12em; color: var(--muted);
-  margin-bottom: 10px;
-  padding: 0 4px;
-}
-.theme-swatches {
-  display: flex; flex-wrap: wrap; gap: 6px;
-  padding: 0 4px;
-}
-.swatch {
-  width: 24px; height: 24px; border-radius: 50%;
-  cursor: pointer;
-  border: 2px solid transparent;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.12), inset 0 1px 2px rgba(255,255,255,0.3);
-  transition: transform 0.2s var(--ease-spring), border-color 0.2s;
-  position: relative;
-}
-.swatch:hover { transform: scale(1.15); }
-.swatch.active { border-color: var(--ink); box-shadow: 0 0 0 2px var(--surface), 0 0 0 4px var(--teal); }
-.swatch-teal     { background: linear-gradient(135deg, #0e9b88, #04403a); }
-.swatch-sunset   { background: linear-gradient(135deg, #e76f51, #6d2818); }
-.swatch-royal    { background: linear-gradient(135deg, #7c3aed, #2e1065); }
-.swatch-forest   { background: linear-gradient(135deg, #16a34a, #14532d); }
-.swatch-rose     { background: linear-gradient(135deg, #e11d74, #831843); }
-.swatch-mono     { background: linear-gradient(135deg, #64748b, #0f172a); }
-.swatch-midnight { background: linear-gradient(135deg, #38bdf8, #0c4a6e); }
-.swatch-obsidian { background: linear-gradient(135deg, #fbbf24, #18181b); }
-
-/* ─── THEME GRID — SETTINGS ─────────────────── */
-.theme-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-  gap: 12px;
-  margin-top: 8px;
-}
-.theme-card {
-  border: 2px solid var(--border);
-  border-radius: var(--r-md);
-  padding: 14px;
-  background: var(--surface);
-  cursor: pointer;
-  transition: transform 0.2s var(--ease-spring), border-color 0.2s, box-shadow 0.2s;
-  text-align: left;
-}
-.theme-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); border-color: var(--border-strong); }
-.theme-card.active { border-color: var(--teal); box-shadow: 0 0 0 3px rgba(14,155,136,0.15); }
-.theme-preview {
-  display: flex; gap: 4px; margin-bottom: 10px;
-}
-.theme-preview-dot {
-  width: 18px; height: 18px; border-radius: 50%;
-  box-shadow: inset 0 1px 2px rgba(255,255,255,0.3);
-}
-.theme-card-name {
-  font-size: 13px; font-weight: 700; color: var(--ink);
-  letter-spacing: 0.02em;
-}
-.theme-card-tag {
-  font-size: 10px; font-weight: 600; text-transform: uppercase;
-  letter-spacing: 0.08em; color: var(--muted);
-  margin-top: 3px;
-}
-
-/* ─── DAILY PROTOCOL — READABILITY FIX ──────── */
-#protocol .card {
-  background: var(--surface);
-  backdrop-filter: none;
-  border: 1px solid var(--border-strong);
-  box-shadow: var(--shadow-md);
-}
-#protocol .check-tile {
-  background: var(--surface);
-  border: 1.5px solid var(--border-strong);
-  backdrop-filter: none;
-}
-#protocol .check-tile strong {
-  color: var(--ink);
-  font-size: 14px;
-  font-weight: 700;
-}
-#protocol .check-tile span {
-  color: var(--ink-2);
-  font-size: 12px;
-  font-weight: 500;
-}
-#protocol .check-tile:hover {
-  border-color: var(--teal);
-  background: var(--surface);
-}
-#protocol .check-tile:has(input:checked) {
-  background: var(--teal-xlight);
-  border-color: var(--teal);
-}
-#protocol .check-tile:has(input:checked) strong { color: var(--teal-dark); }
-#protocol .date-selector {
-  background: var(--surface);
-  border: 1.5px solid var(--border-strong);
-}
-#protocol .timing-hint {
-  background: var(--surface);
-  border: 1px solid var(--border-strong);
-  border-left: 4px solid var(--teal);
-  backdrop-filter: none;
-}
-#protocol .timing-hint .hint-body strong { color: var(--ink); font-size: 14px; }
-#protocol .timing-hint .hint-body span { color: var(--ink-2); }
-
 </style>
 </head>
 <body>
-
-<div class="bg-canvas">
-  <div class="orb orb-1"></div>
-  <div class="orb orb-2"></div>
-  <div class="orb orb-3"></div>
-  <div class="noise-overlay"></div>
-</div>
 
 <!-- ─── LOGIN ─────────────────────────────────── -->
 <section id="loginScreen">
@@ -1088,17 +851,17 @@ audio { width: 100%; margin-top: 10px; }
     <div class="hero-copy">
       <div class="hero-eyebrow">Private Command System · v1.0</div>
       <h1>Pilot your<br><em>discipline.</em></h1>
-      <p style="margin-bottom:36px;">A local-first command center for morning priming, daily discipline, learning, career execution, and weekly review. Your data stays in your browser.</p>
+      <p>A local-first command center for morning priming, daily discipline, learning, career execution, and weekly review. Your data stays in your browser.</p>
       <div class="feature-pills">
         <div class="fp"><div class="fp-dot"></div>Morning Prime</div>
         <div class="fp"><div class="fp-dot gold"></div>Daily Protocol</div>
-        <div class="fp"><div class="fp-dot teal2"></div>Learning Tracker</div>
-        <div class="fp"><div class="fp-dot ink"></div>Career Command</div>
-        <div class="fp"><div class="fp-dot muted"></div>Weekly Review</div>
+        <div class="fp"><div class="fp-dot dark"></div>Learning Tracker</div>
+        <div class="fp"><div class="fp-dot muted"></div>Career Command</div>
+        <div class="fp"><div class="fp-dot"></div>Weekly Review</div>
       </div>
     </div>
 
-    <div style="font-size:12px;color:var(--muted-2);animation:fadeIn 0.5s ease 0.6s both;">Local-first · No cloud · No tracking</div>
+    <div class="login-foot">Local-first · No cloud · No tracking</div>
   </div>
 
   <div class="login-panel">
@@ -1129,6 +892,8 @@ audio { width: 100%; margin-top: 10px; }
         <p>Command System</p>
       </div>
     </div>
+
+    <div class="nav-section-label">Workspace</div>
     <nav class="nav" id="nav">
       <button class="nav-btn active" data-section="dashboard"><span class="nav-icon">▣</span> Dashboard</button>
       <button class="nav-btn" data-section="morning"><span class="nav-icon">☀</span> Morning Prime</button>
@@ -1139,19 +904,7 @@ audio { width: 100%; margin-top: 10px; }
       <button class="nav-btn" data-section="weekly"><span class="nav-icon">↗</span> Weekly Review</button>
       <button class="nav-btn" data-section="settings"><span class="nav-icon">⚙</span> Settings</button>
     </nav>
-    <div class="theme-row">
-      <div class="theme-row-label">Theme</div>
-      <div class="theme-swatches" id="themeSwatches">
-        <div class="swatch swatch-teal"     data-theme-pick="teal"     title="Teal"></div>
-        <div class="swatch swatch-sunset"   data-theme-pick="sunset"   title="Sunset"></div>
-        <div class="swatch swatch-royal"    data-theme-pick="royal"    title="Royal"></div>
-        <div class="swatch swatch-forest"   data-theme-pick="forest"   title="Forest"></div>
-        <div class="swatch swatch-rose"     data-theme-pick="rose"     title="Rose"></div>
-        <div class="swatch swatch-mono"     data-theme-pick="mono"     title="Mono"></div>
-        <div class="swatch swatch-midnight" data-theme-pick="midnight" title="Midnight"></div>
-        <div class="swatch swatch-obsidian" data-theme-pick="obsidian" title="Obsidian"></div>
-      </div>
-    </div>
+
     <div class="sidebar-footer">
       <button id="logoutBtn" class="btn-ghost" style="width:100%;">Logout</button>
     </div>
@@ -1160,32 +913,37 @@ audio { width: 100%; margin-top: 10px; }
   <main class="main-content">
     <div class="topbar">
       <div class="topbar-left">
-        <button id="mobileMenuBtn" class="btn-secondary mobile-menu-btn">Menu</button>
+        <button id="mobileMenuBtn" class="mobile-menu-btn">☰ Menu</button>
         <h1 class="page-title" id="sectionTitle">Dashboard</h1>
       </div>
-      <div class="date-pill">
-        <div class="date-dot"></div>
-        <span id="todayDate"></span>
+      <div class="topbar-right">
+        <div class="date-pill">
+          <div class="date-dot"></div>
+          <span id="todayDate"></span>
+        </div>
       </div>
     </div>
 
     <!-- DASHBOARD -->
     <section id="dashboard" class="section active">
-      <div class="hero-banner anim-fadeUp">
+      <div class="section-intro">
+        <div class="eyebrow">Overview · Today</div>
         <h2>Today's Command Center</h2>
         <p>Start with identity, execute the day, and review your growth through evidence — not emotion.</p>
       </div>
+
       <div class="progress-strip" id="dayProgress">
-        <div class="strip-item"><div class="strip-fill" id="ps-morning" style="width:0%"></div></div>
-        <div class="strip-item"><div class="strip-fill" id="ps-protocol" style="width:0%"></div></div>
-        <div class="strip-item"><div class="strip-fill" id="ps-learning" style="width:0%"></div></div>
-        <div class="strip-item"><div class="strip-fill" id="ps-career" style="width:0%"></div></div>
-        <div class="strip-item"><div class="strip-fill" id="ps-journal" style="width:0%"></div></div>
+        <div class="strip-item"><div class="strip-bar"><div class="strip-fill" id="ps-morning" style="width:0%"></div></div><div class="strip-label">Morning</div></div>
+        <div class="strip-item"><div class="strip-bar"><div class="strip-fill" id="ps-protocol" style="width:0%"></div></div><div class="strip-label">Protocol</div></div>
+        <div class="strip-item"><div class="strip-bar"><div class="strip-fill" id="ps-learning" style="width:0%"></div></div><div class="strip-label">Learning</div></div>
+        <div class="strip-item"><div class="strip-bar"><div class="strip-fill" id="ps-career" style="width:0%"></div></div><div class="strip-label">Career</div></div>
+        <div class="strip-item"><div class="strip-bar"><div class="strip-fill" id="ps-journal" style="width:0%"></div></div><div class="strip-label">Journal</div></div>
       </div>
+
       <div class="grid cols-4">
         <div class="card metric-card anim-fadeUp d1">
           <div class="metric-label">Discipline Score</div>
-          <div class="metric-value" id="dashScore">0/100</div>
+          <div class="metric-value accent" id="dashScore">0/100</div>
           <div class="metric-note">Based on today's protocol.</div>
         </div>
         <div class="card metric-card anim-fadeUp d2">
@@ -1204,28 +962,32 @@ audio { width: 100%; margin-top: 10px; }
           <div class="metric-note">Completed today.</div>
         </div>
       </div>
-      <div class="grid cols-2" style="margin-top:16px;">
+      <div class="grid cols-2" style="margin-top:14px;">
         <div class="card anim-fadeUp d5">
           <h3>Non-Negotiable</h3>
-          <p id="dashNonNegotiable" style="color:var(--muted);font-size:14px;line-height:1.65;">Not set yet. Add it in Morning Prime.</p>
+          <div class="card-sub">Today's one mandatory action.</div>
+          <p id="dashNonNegotiable" style="color:var(--ink-3);font-size:14px;line-height:1.6;">Not set yet. Add it in Morning Prime.</p>
         </div>
         <div class="card anim-fadeUp d6">
           <h3>Weak Area Alert</h3>
-          <p id="dashWeakArea" style="color:var(--muted);font-size:14px;line-height:1.65;">Complete Daily Protocol to identify the weak area.</p>
+          <div class="card-sub">Surfaces from today's protocol score.</div>
+          <p id="dashWeakArea" style="color:var(--ink-3);font-size:14px;line-height:1.6;">Complete Daily Protocol to identify the weak area.</p>
         </div>
       </div>
     </section>
 
     <!-- MORNING PRIME -->
     <section id="morning" class="section">
-      <div class="hero-banner">
+      <div class="section-intro">
+        <div class="eyebrow">Identity · Activation</div>
         <h2>Morning Prime</h2>
         <p>Save reusable affirmation techniques, pre-written affirmation page links, and music links. Then select one method every morning and mark the start protocol complete.</p>
       </div>
 
       <div class="grid cols-2">
         <div class="card anim-fadeUp d1">
-          <h3>Today’s Start Protocol</h3>
+          <h3>Today's Start Protocol</h3>
+          <div class="card-sub">Select a saved method and run through it.</div>
           <form id="morningForm" class="form-grid">
             <div class="field-wrap full">
               <label>Selected Method / Technique</label>
@@ -1254,7 +1016,7 @@ audio { width: 100%; margin-top: 10px; }
               <textarea name="nonNegotiable" placeholder="Complete 90 min of Python practice."></textarea>
             </div>
             <div class="actions full">
-              <button class="btn-primary" type="submit" style="width:auto;padding:12px 28px;">Mark Morning Prime Complete</button>
+              <button class="btn-primary" type="submit" style="width:auto;">Mark Morning Prime Complete</button>
               <button class="btn-secondary" type="button" data-clear="morningForm">Clear</button>
             </div>
           </form>
@@ -1262,6 +1024,7 @@ audio { width: 100%; margin-top: 10px; }
 
         <div class="card anim-fadeUp d2">
           <h3>Add Affirmation Method</h3>
+          <div class="card-sub">Build a reusable activation routine.</div>
           <form id="methodForm" class="form-grid">
             <div class="field-wrap full">
               <label>Method Name</label>
@@ -1295,49 +1058,30 @@ audio { width: 100%; margin-top: 10px; }
               <textarea name="instructions" placeholder="Example: Open the affirmation page, play the music, stand straight, breathe deeply, read slowly, visualize the day, then set one non-negotiable task."></textarea>
             </div>
             <div class="actions full">
-              <button class="btn-primary" type="submit" style="width:auto;padding:12px 28px;">Save Method</button>
+              <button class="btn-primary" type="submit" style="width:auto;">Save Method</button>
             </div>
           </form>
         </div>
       </div>
 
-      <div class="card anim-fadeUp d3" style="margin-top:16px;">
+      <div class="card anim-fadeUp d3" style="margin-top:14px;">
         <h3>Saved Morning Methods</h3>
+        <div class="card-sub">Your library of activation routines.</div>
         <div id="methodList" class="list"></div>
       </div>
     </section>
 
     <!-- PROTOCOL -->
     <section id="protocol" class="section">
-      <div class="hero-banner">
+      <div class="section-intro">
+        <div class="eyebrow">Discipline · Daily Score</div>
         <h2>Daily Protocol</h2>
         <p>Score the day with action-based evidence. Keep your growth measurable.</p>
       </div>
-
-      <div class="timing-hint anim-fadeUp">
-        <div class="hint-icon">🌙</div>
-        <div class="hint-body">
-          <strong>Fill at night, before sleep</strong>
-          <span>The protocol reflects the full day's evidence. Complete it right before — or alongside — your Journal entry. If you're filling after midnight, use the date selector to mark the correct day.</span>
-        </div>
-      </div>
-
       <div class="grid cols-2">
         <div class="card">
-          <h3>Day's Checklist</h3>
-
-          <div class="date-selector">
-            <div class="ds-row">
-              <label class="ds-label">Protocol for</label>
-              <input type="date" id="protocolDate" />
-              <div class="ds-quicks">
-                <button type="button" class="ds-quick" data-offset="0">Today</button>
-                <button type="button" class="ds-quick" data-offset="-1">Yesterday</button>
-              </div>
-            </div>
-            <div class="ds-status" id="dsStatus">○ New entry for today</div>
-          </div>
-
+          <h3>Today's Checklist</h3>
+          <div class="card-sub">Tick what you actually executed.</div>
           <form id="protocolForm">
             <div class="check-grid">
               <label class="check-tile">
@@ -1374,31 +1118,38 @@ audio { width: 100%; margin-top: 10px; }
               </label>
             </div>
             <div class="actions">
-              <button class="btn-primary" type="submit" style="width:auto;padding:12px 28px;">Save Protocol</button>
+              <button class="btn-primary" type="submit" style="width:auto;">Save Protocol</button>
               <button class="btn-secondary" type="button" id="previewScoreBtn">Preview Score</button>
             </div>
           </form>
         </div>
-
         <div class="score-panel">
-          <div class="score-label">Day's Score</div>
-          <div class="score-number" id="scorePreview">0</div>
+          <div class="score-top">
+            <div class="score-label">Today's Score</div>
+            <div class="score-tag">Live</div>
+          </div>
+          <div>
+            <div class="score-number" id="scorePreview">0</div>
+            <div class="score-denom">/ 100 max</div>
+          </div>
           <div class="score-bar-wrap">
             <div class="score-bar-track"><div class="score-bar-fill" id="scoreBarFill" style="width:0%"></div></div>
+            <div class="score-breakdown">Prime 10 · Gym 20 · Learn 15 · Work 20 · Focus 10 · Groom 10 · Journal 10 · Sleep 5</div>
           </div>
-          <div class="score-note" style="margin-top:16px;">Morning Prime 10 · Gym 20 · Learning 15 · Work 20 · Focus 10 · Grooming 10 · Journal 10 · Sleep 5</div>
         </div>
       </div>
     </section>
 
     <!-- JOURNAL -->
     <section id="journal" class="section">
-      <div class="hero-banner">
+      <div class="section-intro">
+        <div class="eyebrow">Reflection · Closure</div>
         <h2>Evening Journal</h2>
         <p>Close the loop before sleep. Capture wins, weakness, lessons, correction, and direction.</p>
       </div>
       <div class="card">
         <h3>Reflection Entry</h3>
+        <div class="card-sub">Direct, evidence-based, brief.</div>
         <form id="journalForm" class="form-grid">
           <div class="field-wrap"><label>Today's Win</label><textarea name="win"></textarea></div>
           <div class="field-wrap"><label>Where I lost control</label><textarea name="weakness"></textarea></div>
@@ -1408,7 +1159,7 @@ audio { width: 100%; margin-top: 10px; }
           <div class="field-wrap"><label>Focus Level (1-10)</label><input name="focusLevel" type="number" min="1" max="10" /></div>
           <div class="field-wrap full"><label>Tomorrow's Non-Negotiable</label><input name="tomorrowTask" /></div>
           <div class="actions full">
-            <button class="btn-primary" type="submit" style="width:auto;padding:12px 28px;">Save Journal</button>
+            <button class="btn-primary" type="submit" style="width:auto;">Save Journal</button>
             <button class="btn-secondary" type="button" data-clear="journalForm">Clear</button>
           </div>
         </form>
@@ -1417,12 +1168,14 @@ audio { width: 100%; margin-top: 10px; }
 
     <!-- LEARNING -->
     <section id="learning" class="section">
-      <div class="hero-banner">
+      <div class="section-intro">
+        <div class="eyebrow">Deliberate · Practice</div>
         <h2>Learning Tracker</h2>
         <p>Track deliberate practice across Python, Excel, Power BI, AI, branding, and strategic skills.</p>
       </div>
       <div class="card">
         <h3>Add Learning Block</h3>
+        <div class="card-sub">Log each practice session with topic & time.</div>
         <form id="learningForm" class="form-grid">
           <div class="field-wrap"><label>Skill</label><input name="skill" placeholder="Python / Excel / Branding" /></div>
           <div class="field-wrap"><label>Hours</label><input name="hours" type="number" min="0" step="0.25" placeholder="1.5" /></div>
@@ -1434,24 +1187,27 @@ audio { width: 100%; margin-top: 10px; }
           </div>
           <div class="field-wrap full"><label>Notes</label><textarea name="notes"></textarea></div>
           <div class="actions full">
-            <button class="btn-primary" type="submit" style="width:auto;padding:12px 28px;">Save Learning</button>
+            <button class="btn-primary" type="submit" style="width:auto;">Save Learning</button>
           </div>
         </form>
       </div>
-      <div class="card" style="margin-top:16px;">
+      <div class="card" style="margin-top:14px;">
         <h3>Recent Learning</h3>
+        <div class="card-sub">Your most recent skill blocks.</div>
         <div id="learningList" class="list"></div>
       </div>
     </section>
 
     <!-- CAREER -->
     <section id="career" class="section">
-      <div class="hero-banner">
+      <div class="section-intro">
+        <div class="eyebrow">Output · Execution</div>
         <h2>Career Command</h2>
         <p>Convert office work into a structured career execution database with outputs, priority, and evidence.</p>
       </div>
       <div class="card">
         <h3>Add Career Task</h3>
+        <div class="card-sub">Capture each meaningful work output.</div>
         <form id="careerForm" class="form-grid">
           <div class="field-wrap"><label>Work Area</label>
             <select name="workArea">
@@ -1480,33 +1236,36 @@ audio { width: 100%; margin-top: 10px; }
           <div class="field-wrap"><label>Evidence / Link</label><input name="evidence" placeholder="File link / note / reference" /></div>
           <div class="field-wrap full"><label>Next Action</label><textarea name="nextAction"></textarea></div>
           <div class="actions full">
-            <button class="btn-primary" type="submit" style="width:auto;padding:12px 28px;">Save Career Task</button>
+            <button class="btn-primary" type="submit" style="width:auto;">Save Career Task</button>
           </div>
         </form>
       </div>
-      <div class="card" style="margin-top:16px;">
+      <div class="card" style="margin-top:14px;">
         <h3>Career Tasks</h3>
+        <div class="card-sub">Tracked outputs across work areas.</div>
         <div id="careerList" class="list"></div>
       </div>
     </section>
 
     <!-- WEEKLY -->
     <section id="weekly" class="section">
-      <div class="hero-banner">
+      <div class="section-intro">
+        <div class="eyebrow">Review · 7-Day</div>
         <h2>Weekly Review</h2>
         <p>Review the last 7 days and generate a copy-paste AI performance analysis prompt.</p>
       </div>
       <div class="grid cols-4">
-        <div class="card metric-card anim-fadeUp d1"><div class="metric-label">Avg Score</div><div id="weekAvg" class="metric-value">0</div><div class="metric-note">Last 7 days</div></div>
+        <div class="card metric-card anim-fadeUp d1"><div class="metric-label">Avg Score</div><div id="weekAvg" class="metric-value accent">0</div><div class="metric-note">Last 7 days</div></div>
         <div class="card metric-card anim-fadeUp d2"><div class="metric-label">Gym Days</div><div id="weekGym" class="metric-value">0</div><div class="metric-note">Sessions done</div></div>
         <div class="card metric-card anim-fadeUp d3"><div class="metric-label">Learning Hours</div><div id="weekLearning" class="metric-value">0h</div><div class="metric-note">Recorded practice</div></div>
         <div class="card metric-card anim-fadeUp d4"><div class="metric-label">Career Done</div><div id="weekCareer" class="metric-value">0</div><div class="metric-note">Completed tasks</div></div>
       </div>
-      <div class="card" style="margin-top:16px;">
+      <div class="card" style="margin-top:14px;">
         <h3>AI Weekly Review Prompt</h3>
+        <div class="card-sub">Generate, copy, paste into any AI for analysis.</div>
         <textarea id="aiPrompt" readonly></textarea>
         <div class="actions">
-          <button class="btn-primary" id="generatePromptBtn" style="width:auto;padding:12px 28px;">Generate Prompt</button>
+          <button class="btn-primary" id="generatePromptBtn" style="width:auto;">Generate Prompt</button>
           <button class="btn-secondary" id="copyPromptBtn">Copy to Clipboard</button>
         </div>
       </div>
@@ -1514,65 +1273,27 @@ audio { width: 100%; margin-top: 10px; }
 
     <!-- SETTINGS -->
     <section id="settings" class="section">
-      <div class="hero-banner">
-        <h2>Settings & Backup</h2>
+      <div class="section-intro">
+        <div class="eyebrow">Data · System</div>
+        <h2>Settings &amp; Backup</h2>
         <p>Export, import, or reset your local CorePilot OS data. Your data stays inside this browser.</p>
       </div>
       <div class="grid cols-3">
         <div class="card">
           <h3>Export Backup</h3>
-          <p style="color:var(--muted);font-size:14px;margin-bottom:16px;">Download all data as JSON.</p>
-          <button id="exportBtn" class="btn-primary" style="width:auto;padding:11px 22px;">Export Data</button>
+          <div class="card-sub">Download all data as JSON.</div>
+          <button id="exportBtn" class="btn-primary" style="width:auto;">Export Data</button>
         </div>
         <div class="card">
           <h3>Import Backup</h3>
-          <p style="color:var(--muted);font-size:14px;margin-bottom:12px;">Restore from a JSON backup.</p>
+          <div class="card-sub">Restore from a JSON backup.</div>
           <div class="field-wrap"><input id="importFile" type="file" accept="application/json" /></div>
           <button id="importBtn" class="btn-secondary">Import Data</button>
         </div>
         <div class="card">
           <h3>Reset App</h3>
-          <p style="color:var(--muted);font-size:14px;margin-bottom:16px;">Delete all local entries from this browser.</p>
+          <div class="card-sub">Delete all entries from this browser.</div>
           <button id="resetBtn" class="btn-danger">Reset All Data</button>
-        </div>
-      </div>
-
-      <div class="card" style="margin-top:16px;">
-        <h3>Color Theme</h3>
-        <p style="color:var(--muted);font-size:14px;margin-bottom:16px;">Pick the interface vibe that matches your focus state. Saves automatically.</p>
-        <div class="theme-grid" id="themeGrid">
-          <button class="theme-card" data-theme-pick="teal">
-            <div class="theme-preview"><div class="theme-preview-dot" style="background:#0e9b88"></div><div class="theme-preview-dot" style="background:#04403a"></div><div class="theme-preview-dot" style="background:#f5c842"></div></div>
-            <div class="theme-card-name">Teal</div><div class="theme-card-tag">Calm Focus</div>
-          </button>
-          <button class="theme-card" data-theme-pick="sunset">
-            <div class="theme-preview"><div class="theme-preview-dot" style="background:#e76f51"></div><div class="theme-preview-dot" style="background:#6d2818"></div><div class="theme-preview-dot" style="background:#f4a261"></div></div>
-            <div class="theme-card-name">Sunset</div><div class="theme-card-tag">Warm Energy</div>
-          </button>
-          <button class="theme-card" data-theme-pick="royal">
-            <div class="theme-preview"><div class="theme-preview-dot" style="background:#7c3aed"></div><div class="theme-preview-dot" style="background:#2e1065"></div><div class="theme-preview-dot" style="background:#fbbf24"></div></div>
-            <div class="theme-card-name">Royal</div><div class="theme-card-tag">Bold Mind</div>
-          </button>
-          <button class="theme-card" data-theme-pick="forest">
-            <div class="theme-preview"><div class="theme-preview-dot" style="background:#16a34a"></div><div class="theme-preview-dot" style="background:#14532d"></div><div class="theme-preview-dot" style="background:#eab308"></div></div>
-            <div class="theme-card-name">Forest</div><div class="theme-card-tag">Grounded</div>
-          </button>
-          <button class="theme-card" data-theme-pick="rose">
-            <div class="theme-preview"><div class="theme-preview-dot" style="background:#e11d74"></div><div class="theme-preview-dot" style="background:#831843"></div><div class="theme-preview-dot" style="background:#f59e0b"></div></div>
-            <div class="theme-card-name">Rose</div><div class="theme-card-tag">Refined</div>
-          </button>
-          <button class="theme-card" data-theme-pick="mono">
-            <div class="theme-preview"><div class="theme-preview-dot" style="background:#475569"></div><div class="theme-preview-dot" style="background:#0f172a"></div><div class="theme-preview-dot" style="background:#f59e0b"></div></div>
-            <div class="theme-card-name">Mono</div><div class="theme-card-tag">Minimal</div>
-          </button>
-          <button class="theme-card" data-theme-pick="midnight">
-            <div class="theme-preview"><div class="theme-preview-dot" style="background:#38bdf8"></div><div class="theme-preview-dot" style="background:#0c4a6e"></div><div class="theme-preview-dot" style="background:#fbbf24"></div></div>
-            <div class="theme-card-name">Midnight</div><div class="theme-card-tag">Dark · Deep Work</div>
-          </button>
-          <button class="theme-card" data-theme-pick="obsidian">
-            <div class="theme-preview"><div class="theme-preview-dot" style="background:#fbbf24"></div><div class="theme-preview-dot" style="background:#18181b"></div><div class="theme-preview-dot" style="background:#d97706"></div></div>
-            <div class="theme-card-name">Obsidian</div><div class="theme-card-tag">Dark · Stealth</div>
-          </button>
         </div>
       </div>
     </section>
@@ -1626,19 +1347,6 @@ function escapeHTML(v) {
   return String(v || "").replace(/[&<>'"]/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;","'":"&#039;",'"':"&quot;" }[c]));
 }
 
-function animateValue(el, target, suffix = '') {
-  const start = parseInt(el.textContent) || 0;
-  const duration = 600;
-  const startTime = performance.now();
-  const update = (now) => {
-    const t = Math.min((now - startTime) / duration, 1);
-    const ease = 1 - Math.pow(1 - t, 3);
-    el.textContent = Math.round(start + (target - start) * ease) + suffix;
-    if (t < 1) requestAnimationFrame(update);
-  };
-  requestAnimationFrame(update);
-}
-
 function setSection(id) {
   document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
@@ -1662,20 +1370,20 @@ function renderMethods() {
   `).join('');
 
   list.innerHTML = data.morningMethods.slice().reverse().map((method, i) => `
-    <div class="list-item" style="animation-delay:${i * 0.05}s">
+    <div class="list-item" style="animation-delay:${i * 0.04}s">
       <div>
         <h4>${escapeHTML(method.name || 'Morning Method')}</h4>
         <p>${escapeHTML(method.instructions || 'No instructions added')}</p>
         <div class="badge-row">
           <span class="badge dark">${escapeHTML(method.type || 'Custom')}</span>
           <span class="badge">${escapeHTML(method.duration || 'Duration not set')}</span>
-          ${method.affirmationLink ? `<a class="badge gold" target="_blank" rel="noopener" href="${escapeHTML(method.affirmationLink)}">Open Affirmation</a>` : ''}
-          ${method.musicLink ? `<a class="badge" target="_blank" rel="noopener" href="${escapeHTML(method.musicLink)}">Open Music</a>` : ''}
+          ${method.affirmationLink ? `<a class="badge accent" target="_blank" rel="noopener" href="${escapeHTML(method.affirmationLink)}">Open Affirmation ↗</a>` : ''}
+          ${method.musicLink ? `<a class="badge gold" target="_blank" rel="noopener" href="${escapeHTML(method.musicLink)}">Open Music ↗</a>` : ''}
         </div>
       </div>
       <button class="btn-danger" onclick="deleteItem('morningMethods','${method.id}')">Delete</button>
     </div>
-  `).join('') || `<div class="empty-state"><p>No morning methods saved yet. Add your affirmation site and music links here.</p></div>`;
+  `).join('') || `<div class="empty-state">No morning methods saved yet. Add your affirmation site and music links here.</div>`;
 }
 
 function renderDashboard() {
@@ -1691,7 +1399,6 @@ function renderDashboard() {
   document.getElementById('dashCareer').textContent = cc;
   document.getElementById('dashNonNegotiable').textContent = morning?.nonNegotiable || 'Not set yet. Add it in Morning Prime.';
 
-  // Progress strip
   document.getElementById('ps-morning').style.width = morning ? '100%' : '0%';
   document.getElementById('ps-protocol').style.width = proto ? '100%' : '0%';
   document.getElementById('ps-learning').style.width = lh > 0 ? Math.min(100, lh * 50) + '%' : '0%';
@@ -1714,24 +1421,24 @@ function renderDashboard() {
 function renderLists() {
   const ll = document.getElementById('learningList');
   ll.innerHTML = data.learning.slice().reverse().slice(0, 8).map((x, i) => `
-    <div class="list-item" style="animation-delay:${i * 0.05}s">
+    <div class="list-item" style="animation-delay:${i * 0.04}s">
       <div>
         <h4>${escapeHTML(x.skill || 'Learning Block')}</h4>
         <p>${escapeHTML(x.topic || 'No topic added')}</p>
         <div class="badge-row">
           <span class="badge">${escapeHTML(x.date)}</span>
           <span class="badge dark">${escapeHTML(x.hours || 0)}h</span>
-          <span class="badge gold">${escapeHTML(x.practice || '')}</span>
+          <span class="badge accent">${escapeHTML(x.practice || '')}</span>
         </div>
       </div>
       <button class="btn-danger" onclick="deleteItem('learning','${x.id}')">Delete</button>
-    </div>`).join('') || `<div class="empty-state"><p>No learning entries yet.</p></div>`;
+    </div>`).join('') || `<div class="empty-state">No learning entries yet.</div>`;
 
   const cl = document.getElementById('careerList');
   cl.innerHTML = data.careerTasks.slice().reverse().slice(0, 10).map((x, i) => {
     const statusClass = x.status === 'Completed' ? 'status-done' : x.status === 'In Progress' ? 'status-wip' : '';
     return `
-    <div class="list-item" style="animation-delay:${i * 0.05}s">
+    <div class="list-item" style="animation-delay:${i * 0.04}s">
       <div>
         <h4>${escapeHTML(x.task || 'Career Task')}</h4>
         <p>${escapeHTML(x.nextAction || 'No next action added')}</p>
@@ -1744,7 +1451,7 @@ function renderLists() {
       </div>
       <button class="btn-danger" onclick="deleteItem('careerTasks','${x.id}')">Delete</button>
     </div>`;
-  }).join('') || `<div class="empty-state"><p>No career tasks yet.</p></div>`;
+  }).join('') || `<div class="empty-state">No career tasks yet.</div>`;
 }
 
 function renderWeekly() {
@@ -1818,25 +1525,7 @@ window.deleteItem = (col, id) => {
 };
 
 document.addEventListener('DOMContentLoaded', () => {
-
-  // ─── THEME SWITCHER ─────────────────────────
-  const THEME_KEY = 'corepilotOSTheme';
-
-  function applyTheme(theme) {
-    document.documentElement.setAttribute('data-theme', theme);
-    localStorage.setItem(THEME_KEY, theme);
-    document.querySelectorAll('[data-theme-pick]').forEach(el =>
-      el.classList.toggle('active', el.dataset.themePick === theme));
-  }
-
-  const savedTheme = localStorage.getItem(THEME_KEY) || 'teal';
-  applyTheme(savedTheme);
-
-  document.querySelectorAll('[data-theme-pick]').forEach(el => {
-    el.addEventListener('click', () => applyTheme(el.dataset.themePick));
-  });
-
-  document.getElementById('todayDate').textContent = new Date().toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+  document.getElementById('todayDate').textContent = new Date().toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' });
 
   if (sessionStorage.getItem(SESSION_KEY) === 'true') {
     document.getElementById('loginScreen').classList.add('hidden');
@@ -1844,7 +1533,6 @@ document.addEventListener('DOMContentLoaded', () => {
     renderAll();
   }
 
-  // Login
   document.getElementById('loginForm').addEventListener('submit', e => {
     e.preventDefault();
     const id = document.getElementById('userId').value.trim();
@@ -1873,11 +1561,6 @@ document.addEventListener('DOMContentLoaded', () => {
   document.querySelectorAll('[data-clear]').forEach(btn =>
     btn.addEventListener('click', () => document.getElementById(btn.dataset.clear).reset()));
 
-  // ─── PROTOCOL DATE SELECTOR ──────────────
-  const protocolDateInput = document.getElementById('protocolDate');
-  const dsStatus = document.getElementById('dsStatus');
-  const quickBtns = document.querySelectorAll('.ds-quick');
-
   const updateScorePreview = () => {
     const vals = checkboxValues(document.getElementById('protocolForm'));
     const score = calculateScore(vals);
@@ -1885,76 +1568,9 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('scoreBarFill').style.width = score + '%';
   };
 
-  function loadProtocolForDate(date) {
-    const today = todayISO();
-    const entry = data.dailyProtocol.find(x => x.date === date);
-    const form = document.getElementById('protocolForm');
-
-    Object.keys(weights).forEach(k => {
-      if (form[k]) form[k].checked = !!(entry && entry[k]);
-    });
-    updateScorePreview();
-
-    if (entry) {
-      dsStatus.textContent = `◉ Editing saved entry (${entry.score || 0}/100)`;
-      dsStatus.className = 'ds-status editing';
-    } else if (date === today) {
-      dsStatus.textContent = '○ New entry for today';
-      dsStatus.className = 'ds-status';
-    } else if (date < today) {
-      dsStatus.textContent = '◐ Backfilling — date is in the past';
-      dsStatus.className = 'ds-status backfill';
-    } else {
-      dsStatus.textContent = '⚠ Future date — not recommended';
-      dsStatus.className = 'ds-status future';
-    }
-
-    // Highlight active quick button
-    quickBtns.forEach(btn => {
-      const d = new Date();
-      d.setDate(d.getDate() + parseInt(btn.dataset.offset));
-      btn.classList.toggle('active', d.toISOString().slice(0, 10) === date);
-    });
-  }
-
-  protocolDateInput.value = todayISO();
-  protocolDateInput.max = todayISO();
-  loadProtocolForDate(todayISO());
-
-  protocolDateInput.addEventListener('change', e => {
-    loadProtocolForDate(e.target.value || todayISO());
-  });
-
-  quickBtns.forEach(btn => {
-    btn.addEventListener('click', () => {
-      const d = new Date();
-      d.setDate(d.getDate() + parseInt(btn.dataset.offset));
-      const dateStr = d.toISOString().slice(0, 10);
-      protocolDateInput.value = dateStr;
-      loadProtocolForDate(dateStr);
-    });
-  });
-
-  document.getElementById('protocolForm').addEventListener('submit', e => {
-    e.preventDefault();
-    const date = protocolDateInput.value || todayISO();
-    const vals = checkboxValues(e.target);
-    const score = calculateScore(vals);
-    const existing = data.dailyProtocol.find(x => x.date === date);
-    upsertByDate('dailyProtocol', {
-      ...vals,
-      id: existing?.id || uid(),
-      date,
-      score
-    });
-    document.getElementById('scorePreview').textContent = score;
-    document.getElementById('scoreBarFill').style.width = score + '%';
-    saveData();
-    setSection('dashboard');
-  });
-
   document.getElementById('protocolForm').querySelectorAll('input[type=checkbox]').forEach(cb =>
     cb.addEventListener('change', updateScorePreview));
+
   document.getElementById('previewScoreBtn').addEventListener('click', updateScorePreview);
 
   document.getElementById('morningForm').addEventListener('submit', e => {
@@ -1980,6 +1596,16 @@ document.addEventListener('DOMContentLoaded', () => {
     saveData();
   });
 
+  document.getElementById('protocolForm').addEventListener('submit', e => {
+    e.preventDefault();
+    const vals = checkboxValues(e.target);
+    const score = calculateScore(vals);
+    upsertByDate('dailyProtocol', { ...vals, id: getTodayEntry('dailyProtocol')?.id || uid(), date: todayISO(), score });
+    document.getElementById('scorePreview').textContent = score;
+    document.getElementById('scoreBarFill').style.width = score + '%';
+    saveData(); setSection('dashboard');
+  });
+
   document.getElementById('journalForm').addEventListener('submit', e => {
     e.preventDefault();
     const obj = formToObject(e.target);
@@ -2003,7 +1629,7 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('copyPromptBtn').addEventListener('click', async () => {
     await navigator.clipboard.writeText(document.getElementById('aiPrompt').value);
     const btn = document.getElementById('copyPromptBtn');
-    btn.textContent = 'Copied';
+    btn.textContent = 'Copied ✓';
     setTimeout(() => btn.textContent = 'Copy to Clipboard', 1200);
   });
 
@@ -2033,27 +1659,6 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   renderAll();
-
-  // Stagger card animations on section switch
-  const observer = new MutationObserver(muts => {
-    muts.forEach(m => {
-      if (m.target.classList.contains('active')) {
-        const cards = m.target.querySelectorAll('.card, .metric-card, .hero-banner, .score-panel');
-        cards.forEach((c, i) => {
-          c.style.opacity = '0';
-          c.style.transform = 'translateY(16px)';
-          requestAnimationFrame(() => {
-            setTimeout(() => {
-              c.style.transition = 'opacity 0.45s ease, transform 0.45s cubic-bezier(0.22,1,0.36,1)';
-              c.style.opacity = '1';
-              c.style.transform = 'translateY(0)';
-            }, i * 55);
-          });
-        });
-      }
-    });
-  });
-  document.querySelectorAll('.section').forEach(s => observer.observe(s, { attributes: true, attributeFilter: ['class'] }));
 });
 </script>
 </body>
